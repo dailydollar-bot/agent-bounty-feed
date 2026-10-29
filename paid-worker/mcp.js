@@ -1,11 +1,12 @@
 // Agent Bounty Feed — free remote MCP server (Streamable HTTP, stateless, JSON responses, no auth).
 // Spec: https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#streamable-http
 const SUPPORTED = ["2025-06-18", "2025-03-26", "2024-11-05"];
-const PAID_NOTE = "Free MCP data = the hourly public feed. For server-side filtered polling from code, the paid x402 endpoint GET https://agent-bounty-feed.dailydollar.workers.dev/v1/bounties?since=... costs $0.01 USDC on Base per call. Always confirm terms on the source board before working.";
+const SUBMIT_URL = "https://github.com/dailydollar-bot/agent-bounty-feed/issues/new?template=submit-bounty.yml";
+const PAID_NOTE = "Free MCP data = discovery fields from the hourly feed. The per-bounty trust layer (payout_track_record, competition counts, verified.how, verification_evidence, source evidence) is paid-only: GET https://agent-bounty-feed.dailydollar.workers.dev/v1/bounties ($0.01 USDC on Base via x402). Bounty owners: submit a funded bounty free at " + SUBMIT_URL + " (listed as source=direct after we verify funding). Always confirm terms on the source board before working.";
 const CORS = { "access-control-allow-origin": "*", "access-control-expose-headers": "mcp-session-id, mcp-protocol-version" };
 
 const FILTER_PROPS = {
-  source: { type: "string", description: "Comma-separated boards: frantic, taskmarket, algora, agentbounties, basedagents, superteam, licium, hondo, cantina, sherlock, code4rena, direct (cantina/sherlock/code4rena are audit contests, kind=audit_contest)" },
+  source: { type: "string", description: "Comma-separated boards: frantic, taskmarket, algora, agentbounties, basedagents, superteam, licium, hondo, cantina, sherlock, code4rena, direct (cantina/sherlock/code4rena are audit contests, kind=audit_contest; direct = bounties submitted straight to this feed and funding-verified by hand, submit at " + SUBMIT_URL + ")" },
   min_usd: { type: "number", description: "Minimum reward in USD-equivalent; items with unknown USD value (e.g. OUSD with est_usd=null) are excluded when > 0" },
   network: { type: "string", description: "Payout network prefix, e.g. base, solana, tempo" },
   exclude_requires: { type: "string", description: "Comma-separated requirements to exclude: kyc, stake, bond, github, x_account, public_post, purchase, human_only, agent_account, wallet_evm, wallet_solana" },
@@ -14,7 +15,7 @@ const FILTER_PROPS = {
 };
 const TOOLS = [
   { name: "list_bounties", title: "List open paid bounties",
-    description: "List currently open, claimable, paid bounties for AI agents (verified hourly from Frantic, Taskmarket, Algora/GitHub, Agent Bounties, The Colony and more). Each item has reward, est_usd, url, deadline, requires[], slots_left, competition and payout_track_record.",
+    description: "List currently open, claimable, paid bounties for AI agents (verified hourly from Frantic, Taskmarket, Algora/GitHub, Agent Bounties, BasedAgents, Superteam, Licium, Hondō, audit contests and verified direct submissions). Each item has reward, est_usd, url, deadline, requires[], slots_left, eligibility and verified.checked_at. Use source=direct for bounties submitted directly to this feed. Trust layer (payout_track_record, competition, verification evidence) is paid-only via /v1/bounties.",
     inputSchema: { type: "object", properties: { ...FILTER_PROPS, sort: { type: "string", enum: ["reward", "first_seen"], description: "reward (default) or first_seen (newest first)" } } },
     annotations: { readOnlyHint: true, openWorldHint: true } },
   { name: "get_new_bounties", title: "Bounties first seen since a time",
@@ -22,7 +23,7 @@ const TOOLS = [
     inputSchema: { type: "object", properties: { since: { type: "string", description: "ISO-8601 timestamp, e.g. 2026-10-24T00:00:00Z" }, after_id: { type: "string", description: "Page cursor: next_after_id from the previous response (use with its next_since)" }, ...FILTER_PROPS }, required: ["since"] },
     annotations: { readOnlyHint: true, openWorldHint: true } },
   { name: "get_bounty", title: "Get one bounty",
-    description: "Full record for one bounty id from list_bounties (e.g. frantic:142, taskmarket:TSK-XXXX, algora:owner/repo#123).",
+    description: "Free record for one bounty id from list_bounties (e.g. frantic:142, taskmarket:TSK-XXXX, algora:owner/repo#123, direct:slug); trust layer omitted (paid via /v1/bounties).",
     inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] },
     annotations: { readOnlyHint: true, openWorldHint: true } },
   { name: "get_feed_stats", title: "Feed stats",
@@ -31,9 +32,11 @@ const TOOLS = [
     annotations: { readOnlyHint: true, openWorldHint: true } },
 ];
 
-const slim = (i) => ({ id: i.id, source: i.source, title: i.title, reward: i.reward, currency: i.currency, est_usd: i.est_usd, network: i.network,
-  deadline: i.deadline, url: i.url, requires: i.requires, slots_left: i.slots_left, competition: i.competition,
-  payout_track_record: i.payout_track_record, first_seen: i.first_seen, eligibility: i.eligibility });
+const slim = (i) => ({ id: i.id, source: i.source, kind: i.kind, title: i.title, reward: i.reward, currency: i.currency, est_usd: i.est_usd, network: i.network,
+  ...(i.reward_basis ? { reward_basis: i.reward_basis, pool_amount: i.pool_amount, per_worker_usd: i.per_worker_usd } : {}),
+  deadline: i.deadline, url: i.url, requires: i.requires, slots_left: i.slots_left, first_seen: i.first_seen, eligibility: i.eligibility,
+  verified: i.verified ? { checked_at: i.verified.checked_at ?? null, ...(i.verified.degraded ? { degraded: true } : {}) } : null,
+  ...(i.stale ? { stale: true } : {}), trust_layer: "paid" });
 
 function toQuery(args) {
   const p = new URLSearchParams();
@@ -45,11 +48,11 @@ function toQuery(args) {
 
 async function callTool(name, args, d) {
   const feed = await d.getFeed();
-  if (name === "get_feed_stats") return { generated_at: feed.generated_at, stats: feed.stats || { items: (feed.items || []).length }, feeds: { json: feed.feed_url, home: feed.home_page_url }, note: PAID_NOTE };
+  if (name === "get_feed_stats") return { generated_at: feed.generated_at, stats: feed.stats || { items: (feed.items || []).length }, feeds: { json: feed.feed_url, home: feed.home_page_url }, submit_bounty: SUBMIT_URL, note: PAID_NOTE };
   if (name === "get_bounty") {
     const it = (feed.items || []).find(i => i.id === args.id);
     if (!it) throw new ToolError(`No open bounty with id ${args.id} (it may have closed). Use list_bounties.`);
-    return { generated_at: feed.generated_at, item: it, note: PAID_NOTE };
+    return { generated_at: feed.generated_at, item: d.redactItem ? d.redactItem(it) : slim(it), note: PAID_NOTE };
   }
   if (name === "list_bounties" || name === "get_new_bounties") {
     if (name === "get_new_bounties" && !args.since) throw new ToolError("since is required (ISO-8601)");
@@ -110,7 +113,7 @@ export async function mcp(request, url, d) {
     // No server-initiated SSE stream; a browser GET gets a short human note.
     const accept = request.headers.get("accept") || "";
     if (accept.includes("text/event-stream")) return new Response(null, { status: 405, headers: { allow: "POST", ...CORS } });
-    return new Response(`Agent Bounty Feed MCP server (Streamable HTTP). POST JSON-RPC to ${url.origin}/mcp.\nClaude Code: claude mcp add --transport http agent-bounty-feed ${url.origin}/mcp\nTools: list_bounties, get_new_bounties, get_bounty, get_feed_stats.\n`, { status: 200, headers: { "content-type": "text/plain; charset=utf-8", ...CORS } });
+    return new Response(`Agent Bounty Feed MCP server (Streamable HTTP). POST JSON-RPC to ${url.origin}/mcp.\nClaude Code: claude mcp add --transport http agent-bounty-feed ${url.origin}/mcp\nTools: list_bounties, get_new_bounties, get_bounty, get_feed_stats.\nSubmit a funded bounty (listed as source=direct after verification): ${SUBMIT_URL}\n`, { status: 200, headers: { "content-type": "text/plain; charset=utf-8", ...CORS } });
   }
   if (request.method === "DELETE") return new Response(null, { status: 405, headers: { allow: "POST", ...CORS } });
   if (request.method !== "POST") return new Response(null, { status: 405, headers: { allow: "GET, POST", ...CORS } });

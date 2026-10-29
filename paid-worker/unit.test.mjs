@@ -150,4 +150,63 @@ ok("earn-now: Superteam ranked prize totals are not one payout; raw 0.999 stays 
   assert.deepEqual(e.items.map(i => i.id), ["pool:1000"]);
   assert.equal(T.earnUsd(f.items[0]), null);
 });
+
+// ---- Free vs paid: per-item trust layer is paid-only
+const RICH = { id: "direct:demo", source: "direct", kind: "bounty", title: "t", reward: 5, currency: "USDC", est_usd: 5, url: "https://example.com/b",
+  requires: ["purchase"], deadline: null, slots_left: 1, eligibility: "e", first_seen: "2026-10-27T01:00:00Z", fetched_at: "2026-10-27T01:00:00Z",
+  competition: { attempts: 3 }, payout_track_record: { paid: 7, basis: "x" }, verification_evidence: "escrow tx 0xabc", extra: { sponsor_url: "s" },
+  verified: { checked_at: "2026-10-27T01:00:00Z", how: "escrow checked", degraded: true }, verified_direct: true };
+ok("redactItem drops trust layer, keeps discovery + freshness flags + purchase tag", () => {
+  const r = T.redactItem(RICH);
+  for (const k of T.TRUST_FIELDS) assert.equal(k in r, false, k);
+  assert.deepEqual(r.verified, { checked_at: "2026-10-27T01:00:00Z", degraded: true });
+  assert.equal(r.trust_layer, "paid");
+  for (const k of ["id", "title", "reward", "url", "requires", "deadline", "slots_left", "est_usd", "first_seen", "verified_direct"]) assert.deepEqual(r[k], RICH[k], k);
+  assert.equal(RICH.payout_track_record.paid, 7); // input not mutated
+});
+ok("paid filter() keeps the full trust layer and labels it", () => {
+  const out = T.filter({ generated_at: GEN, items: [RICH] }, new URLSearchParams("source=direct"), q("source=direct"));
+  assert.equal(out.trust_layer, "full"); assert.equal(out.items[0].payout_track_record.paid, 7);
+  assert.equal(out.items[0].verified.how, "escrow checked"); assert.equal(out.items[0].verification_evidence, "escrow tx 0xabc");
+});
+{
+  const feed = { generated_at: GEN, stats: {}, items: [RICH, { ...RICH, id: "frantic:1", source: "frantic", requires: [] }] };
+  const deps = { getFeed: async () => T.redactFeed(feed), parseQuery: T.parseQuery, applyFilter: T.applyFilter, redactItem: T.redactItem };
+  const call = async (name, args) => { const r = await mcp(new Request("https://x/mcp", { method: "POST", body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name, arguments: args } }) }), new URL("https://x/mcp"), deps); return (await r.json()).result.structuredContent; };
+  const lb = await call("list_bounties", { source: "direct" });
+  ok("MCP list_bounties source=direct works and omits trust layer", () => {
+    assert.deepEqual(lb.items.map(i => i.id), ["direct:demo"]);
+    const txt = JSON.stringify(lb.items);
+    for (const k of ["payout_track_record", "competition", "verification_evidence", "escrow checked", "sponsor_url"]) assert.equal(txt.includes(k), false, k);
+    assert.match(lb.note, /submit-bounty\.yml/);
+  });
+  const gb = await call("get_bounty", { id: "direct:demo" });
+  ok("MCP get_bounty is redacted even if the upstream item were rich", () => {
+    assert.equal("payout_track_record" in gb.item, false); assert.equal(gb.item.verified.how, undefined);
+  });
+  const tl = await (await mcp(new Request("https://x/mcp", { method: "POST", body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }) }), new URL("https://x/mcp"), deps)).json();
+  ok("MCP tool descriptions advertise direct submissions", () => { assert.match(JSON.stringify(tl), /submit-bounty\.yml/); assert.match(JSON.stringify(tl), /direct/); });
+}
+ok("earn-now output carries no trust layer and links the submit form", () => {
+  const now = Date.parse("2026-10-27T02:00:00Z");
+  const e = T.earnNow({ generated_at: GEN, items: [{ ...RICH, requires: [], verified: { checked_at: "2026-10-27T01:00:00Z", how: "h" } }] }, now);
+  assert.equal(e.count, 1); assert.equal(JSON.stringify(e.items).includes("payout_track_record"), false);
+  assert.match(e.submit_a_bounty, /submit-bounty\.yml/);
+});
+{
+  const realFetch = globalThis.fetch;
+  const pub = { generated_at: "2026-10-28T01:00:00Z", items: [T.redactItem(RICH), T.redactItem({ ...RICH, id: "new:1" })] };
+  globalThis.fetch = async () => new Response(JSON.stringify(pub));
+  const a = await T.getPaidFeed(null, { generated_at: "2026-10-28T01:00:00Z", items: [RICH] });
+  const b = await T.getPaidFeed(null, null);
+  const c = await T.getPaidFeed(null, { generated_at: "2026-10-28T00:00:00Z", items: [RICH] });
+  globalThis.fetch = realFetch;
+  ok("getPaidFeed: bundled full feed when current; enriched 'lagging' when older; marked fallback when missing", () => {
+    assert.equal(a.trust_layer, "full"); assert.equal(a.feed.items[0].payout_track_record.paid, 7);
+    assert.equal(b.trust_layer, "unavailable_this_refresh");
+    assert.equal(c.trust_layer, "lagging"); assert.equal(c.feed.items.length, 2);
+    assert.equal(c.feed.items[0].payout_track_record.paid, 7); assert.equal(c.feed.items[0].verified.how, "escrow checked");
+    assert.equal(c.feed.items[0].verified.checked_at, "2026-10-27T01:00:00Z"); assert.equal(c.feed.items[1].trust_layer_missing, true);
+  });
+}
 console.log(`\n${n} unit tests passed`);

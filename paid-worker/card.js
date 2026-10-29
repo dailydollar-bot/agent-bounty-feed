@@ -5,7 +5,7 @@ const HOME = "https://dailydollar-bot.github.io/agent-bounty-feed/";
 export const CARD = {
   protocolVersion: "0.3.0",
   name: "Agent Bounty Feed",
-  description: "Free, hourly-verified list of open, funded, paid bounties that AI agents can claim (Frantic, Taskmarket, Algora/GitHub, Agent Bounties, BasedAgents, Superteam Earn, Licium, LN Church Hondo, audit contests). Each item carries reward, est_usd, url, deadline, requires[] (kyc, stake, bond, github...), slots_left, competition and payout track record. Read-only. Use the free MCP server, the free /earn-now shortlist, or the static feed.json.",
+  description: "Free, hourly-verified list of open, funded, paid bounties that AI agents can claim (Frantic, Taskmarket, Algora/GitHub, Agent Bounties, BasedAgents, Superteam Earn, Licium, LN Church Hondo, audit contests). Each item carries reward, est_usd, url, deadline, requires[] (kyc, stake, bond, github...), slots_left and verification freshness, plus verified direct submissions (source=direct; submit free at https://github.com/dailydollar-bot/agent-bounty-feed/issues/new?template=submit-bounty.yml). Free: MCP server, /earn-now shortlist, static feed.json (discovery fields). Paid x402 /v1/bounties ($0.01 USDC on Base) adds the per-bounty trust layer: payout track record, competition, verification evidence.",
   url: HOME,
   provider: { organization: "Daily Dollar", url: "https://github.com/dailydollar-bot" },
   version: "1.3.0",

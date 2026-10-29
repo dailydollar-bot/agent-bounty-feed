@@ -6,3 +6,4 @@ STATUS.md
 .wrangler/
 node_modules/
 .cache/
+paid-worker/*.gen.js

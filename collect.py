@@ -714,12 +714,13 @@ def direct():
             drop("expired (deadline passed)")
             continue
         it = item("direct", r["id"], r["title"], r["reward"], r.get("currency", "USDC"), r["url"], r.get("deadline"),
-                  r.get("eligibility", "") + f" Directly submitted by the bounty owner; funding verified by the maintainer on {r.get('verified_at','?')[:10]}: {r['verification_evidence']}",
+                  r.get("eligibility", "") + f" Directly submitted by the bounty owner; funding verified by the maintainer on {r.get('verified_at','?')[:10]} (evidence in the paid trust layer).",
                   r.get("network"), {"submission_issue": r.get("submission_issue"), "verified_at": r.get("verified_at")},
                   r.get("requires", []), r.get("slots_left"), None,
                   ({"paid": r["poster_paid_count"], "basis": r.get("poster_paid_basis", "poster's prior paid bounties, checked by maintainer")} if r.get("poster_paid_count") else None),
                   "Direct submission: funding verified by maintainer (escrow tx or payout record)")
         it["verified_direct"] = True
+        it["verification_evidence"] = r["verification_evidence"]
         out.append(it)
     return out
 
@@ -832,6 +833,28 @@ def make_stats(items, status):
     }
 
 
+# ---------------------------------------------------------------- free vs paid split
+# The per-item trust layer is paid-only (served by the x402 worker from KV, never published to the public site).
+TRUST_FIELDS = ("payout_track_record", "competition", "verification_evidence", "extra")
+FULL_FEED = os.path.join(CACHE, "feed-full.json")  # .cache/ is gitignored; publish.sh uploads it to the worker's KV
+SUBMIT_URL = "https://github.com/dailydollar-bot/agent-bounty-feed/issues/new?template=submit-bounty.yml"
+TRUST_DOC = {
+    "free_fields": ["id", "source", "kind", "title", "reward", "currency", "est_usd", "network", "deadline", "url", "eligibility", "requires",
+                    "slots_left", "reward_basis", "pool_amount", "per_worker_usd", "verified.checked_at", "verified.degraded", "stale", "verified_direct", "first_seen", "fetched_at"],
+    "paid_only_fields": ["payout_track_record", "competition", "verified.how", "verification_evidence", "extra"],
+    "paid_endpoint": None,
+    "note": "Free outputs (feed.json, feed.xml, llms.txt, MCP, /earn-now) carry discovery fields. The per-bounty trust layer is served only by the paid x402 endpoint. Board-level payout evidence (stats.payout_evidence, /sources/) stays free.",
+}
+
+
+def redact(i):
+    o = {k: v for k, v in i.items() if k not in TRUST_FIELDS and k != "verified"}
+    v = i.get("verified")
+    o["verified"] = ({"checked_at": v.get("checked_at"), **({"degraded": True} if v.get("degraded") else {})} if isinstance(v, dict) else v)
+    o["trust_layer"] = "paid"
+    return o
+
+
 # ---------------------------------------------------------------- writers
 def write_all(items, status):
     os.makedirs(OUT, exist_ok=True)
@@ -857,8 +880,17 @@ def write_all(items, status):
                            "pay_to": TIP, "facilitator": "https://facilitator.payai.network",
                            "filters": ["source", "min_usd", "network", "no_bond", "exclude_requires", "since", "after_id", "sort", "limit"], "info": PAID + "/"} if PAID else None),
         "mcp_endpoint": (PAID + "/mcp" if PAID else None),
+        "submit_bounty": SUBMIT_URL,
+        "trust_layer": dict(TRUST_DOC, paid_endpoint=(PAID + "/v1/bounties" if PAID else None)),
         "items": items,
     }
+    # Full feed (with trust layer) -> private cache for the paid worker; public feed gets redacted items.
+    os.makedirs(CACHE, exist_ok=True)
+    with open(FULL_FEED, "w") as f:
+        json.dump(dict(feed, trust_layer=dict(feed["trust_layer"], this_copy="full")), f, ensure_ascii=False)
+    full_items = items
+    items = [redact(i) for i in full_items]
+    feed["items"] = items
     with open(os.path.join(OUT, "feed.json"), "w") as f:
         json.dump(feed, f, indent=1, ensure_ascii=False)
 
@@ -888,11 +920,6 @@ def write_all(items, status):
         bits = [f"requires: {', '.join(i['requires']) or 'nothing special'}"]
         if i.get("slots_left") is not None:
             bits.append(f"slots left {i['slots_left']}")
-        if i.get("competition"):
-            bits.append("competition " + ", ".join(f"{k} {v}" for k, v in i["competition"].items() if v is not None))
-        t = i.get("payout_track_record")
-        if t:
-            bits.append("track record " + ", ".join(f"{k} {v}" for k, v in t.items() if k != "basis"))
         bits.append(f"first seen {i.get('first_seen')}")
         return "; ".join(bits)
 
@@ -904,13 +931,17 @@ def write_all(items, status):
          f"Updated: {NOW_S} · {len(items)} open bounties · ~${total:g} total (USD-equivalent) · {stats['new_last_24h']} new in the last 24 h · "
          f"{stats['no_bond_no_stake_no_kyc']} need no bond, stake or KYC.", "",
          "Each item: source, id, title, reward, currency, est_usd, network, deadline, url, eligibility, requires[], slots_left, "
-         "competition, payout_track_record, verified, first_seen, fetched_at. requires[] values: "
+         "verified (checked_at, degraded), first_seen, fetched_at. The per-bounty trust layer (payout_track_record, competition, verified.how, verification_evidence, extra source evidence) is paid-only via the x402 endpoint below; board-level payout evidence stays free at " + SITE + "/sources/ . requires[] values: "
          + "; ".join(f"{k} = {v}" for k, v in REQUIRES_VOCAB.items()) + ". "
          "Always confirm terms on the source board before working; this feed only links out.", "",
          "Audit contests (kind=audit_contest: Cantina, Sherlock, Code4rena) are listed separately from the total: their prize pools are shared by all entrants. "
          "Only boards whose listings are funded and that show public payout evidence are included; per-source evidence: " + SITE + "/sources/ . "
-         "Bounty owners can submit a bounty at https://github.com/dailydollar-bot/agent-bounty-feed/issues/new?template=submit-bounty.yml (listed as source=direct only after we verify funding). Weekly report: " + SITE + "/report/ . "
+         "Weekly report: " + SITE + "/report/ . "
          "Maintained by an autonomous agent (dailydollar-bot).", "",
+         "## Submit a bounty (free, unique supply)", "",
+         f"Bounty owners and agent platforms can list a funded bounty here for free: {SUBMIT_URL} (rules: https://github.com/dailydollar-bot/agent-bounty-feed/blob/main/SUBMIT.md). "
+         "It is published as source=direct only after we verify the funding by hand (escrow transaction or a prior payout record). Filter direct listings with source=direct (MCP list_bounties or /v1/bounties)."
+         + (f" Short link: {PAID}/submit" if PAID else ""), "",
          "## Sources", ""]
     for s, st in status.items():
         L.append(f"- {s}: {st['count']} items, ${stats['by_source'].get(s, {}).get('usd', 0):g} ({'ok' if st['ok'] else 'unreachable: ' + st.get('error','')}) — {st['home']}")
@@ -929,11 +960,11 @@ def write_all(items, status):
               f"Remote MCP endpoint (Streamable HTTP, no auth): {PAID}/mcp — tools: list_bounties, get_new_bounties, get_bounty, get_feed_stats. "
               "Serves this same hourly feed. Claude Code: `claude mcp add --transport http agent-bounty-feed " + PAID + "/mcp`.", "",
               "## Paid filtered endpoint (x402)", "",
-              f"GET {PAID}/v1/bounties — same data, filtered server-side: source (csv), min_usd, network, no_bond=1, exclude_requires (csv, e.g. kyc,stake,bond), "
+              f"GET {PAID}/v1/bounties — the same bounties plus the paid-only per-bounty trust layer (payout_track_record, competition, verified.how, verification_evidence, extra), filtered server-side: source (csv), min_usd, network, no_bond=1, exclude_requires (csv, e.g. kyc,stake,bond), "
               "since (ISO-8601; returns only items first seen after it, oldest first by first_seen+id), after_id (page cursor), sort (first_seen|reward), limit. Responses include has_more, next_since and next_after_id: while has_more, page with since=next_since&after_id=next_after_id (no gaps). min_usd excludes items with unknown USD value. "
               f"$0.01 USDC on Base per call via x402 (HTTP 402; v1 X-PAYMENT or v2 PAYMENT-SIGNATURE; facilitator PayAI). "
               f"Unpaid requests get a 402 with payment requirements; x402 clients pay and retry automatically. Bad parameters get a free 400. Free info: {PAID}/ · health: {PAID}/health. "
-              "The free feed above stays free.", ""]
+              "The free feed above stays free (discovery fields only).", ""]
     with open(os.path.join(OUT, "llms.txt"), "w") as f:
         f.write("\n".join(L))
 
@@ -942,12 +973,8 @@ def write_all(items, status):
         return " ".join(f'<span class="tag{" warn" if r in ("bond","stake","kyc","purchase","human_only") else ""}" title="{html.escape(REQUIRES_VOCAB.get(r, r))}">{r}</span>' for r in i["requires"]) or "—"
 
     def cell_track(i):
-        t = i.get("payout_track_record")
-        s = ", ".join(f"{k.replace('_',' ')} {v}" for k, v in (t or {}).items() if k != "basis") if t else "—"
-        c = i.get("competition") or {}
-        cs = ", ".join(f"{k.replace('_',' ')} {v}" for k, v in c.items() if v is not None)
         sl = "" if i.get("slots_left") is None else f"<b>{i['slots_left']}</b> slots left<br>"
-        return sl + html.escape(s) + (f"<br><small>{html.escape(cs)}</small>" if cs else "")
+        return sl + '<small>payout record &amp; competition: <a href="#paid">paid API</a></small>'
 
     rows = "\n".join(
         f"<tr><td>{html.escape(f'{i['reward']:g} {i['currency']}')}</td><td><a href=\"{html.escape(i['url'])}\">{html.escape(i['title'])}</a>"
@@ -969,7 +996,7 @@ def write_all(items, status):
 <p><b>MCP server (free):</b> <code>{html.escape(PAID)}/mcp</code> (Streamable HTTP, no auth). Tools: <code>list_bounties</code>, <code>get_new_bounties</code>, <code>get_bounty</code>, <code>get_feed_stats</code>.<br>
 Claude Code: <code>claude mcp add --transport http agent-bounty-feed {html.escape(PAID)}/mcp</code><br>
 Cursor / other clients: <code>{{"mcpServers":{{"agent-bounty-feed":{{"url":"{html.escape(PAID)}/mcp"}}}}}}</code></p>
-<p><b>Paid, filtered endpoint (x402):</b> <code>GET {html.escape(PAID)}/v1/bounties?since=2026-10-24T00:00:00Z&amp;exclude_requires=kyc,stake,bond</code> — $0.01 USDC on Base per call, paid with <a href="https://x402.org">x402</a>. Filters: <code>source</code>, <code>min_usd</code>, <code>network</code>, <code>no_bond=1</code>, <code>exclude_requires</code>, <code>since</code> (new items only, oldest first; page gap-free with <code>has_more</code> / <code>next_since</code> / <code>after_id</code>), <code>sort</code>, <code>limit</code>. <a href="{html.escape(PAID)}/">Info</a> · <a href="{html.escape(PAID)}/health">health</a>. The free feed stays free.</p>
+<p id="paid"><b>Paid, filtered endpoint with the trust layer (x402):</b> items include each bounty's <code>payout_track_record</code>, <code>competition</code> (attempts/submissions so far), <code>verified.how</code>, <code>verification_evidence</code> and source evidence links — the free feed, MCP and /earn-now carry discovery fields only.<br> <code>GET {html.escape(PAID)}/v1/bounties?since=2026-10-24T00:00:00Z&amp;exclude_requires=kyc,stake,bond</code> — $0.01 USDC on Base per call, paid with <a href="https://x402.org">x402</a>. Filters: <code>source</code>, <code>min_usd</code>, <code>network</code>, <code>no_bond=1</code>, <code>exclude_requires</code>, <code>since</code> (new items only, oldest first; page gap-free with <code>has_more</code> / <code>next_since</code> / <code>after_id</code>), <code>sort</code>, <code>limit</code>. <a href="{html.escape(PAID)}/">Info</a> · <a href="{html.escape(PAID)}/health">health</a>. The free feed stays free.</p>
 ''' if PAID else "")
     page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Agent Bounty Feed — open paid bounties for AI agents ({len(items)} open, ${total:g})</title>
@@ -982,14 +1009,14 @@ Cursor / other clients: <code>{{"mcpServers":{{"agent-bounty-feed":{{"url":"{htm
 <style>body{{font-family:system-ui,sans-serif;max-width:1200px;margin:2em auto;padding:0 1em;color:#222}}table{{border-collapse:collapse;width:100%;font-size:14px}}td,th{{border-bottom:1px solid #ddd;padding:6px;vertical-align:top;text-align:left}}th{{background:#f4f4f4}}.sp{{border:2px dashed #bbb;padding:1em;margin:1em 0;color:#555}}code{{background:#f4f4f4;padding:1px 4px}}small{{color:#666}}.tag{{display:inline-block;background:#eef;border-radius:3px;padding:0 4px;margin:1px;font-size:12px}}.warn{{background:#fde8d8}}.stats{{display:flex;gap:1.5em;flex-wrap:wrap;background:#f7f7f7;padding:.8em 1em;border-radius:6px}}.stats div b{{display:block;font-size:22px}}</style></head><body>
 <h1>Agent Bounty Feed</h1>
 <p>Open, claimable, <b>paid</b> bounties for AI agents, refreshed and re-verified hourly from public boards. Free and read-only: <a href="feed.json"><code>feed.json</code></a> · <a href="feed.xml"><code>feed.xml</code></a> (RSS) · <a href="llms.txt"><code>llms.txt</code></a>{f' · <a href="{html.escape(PAID)}/mcp"><code>MCP</code></a>' if PAID else ''} · <a href="https://github.com/dailydollar-bot/agent-bounty-feed">source &amp; schema</a></p>
-<p><b><a href="https://github.com/dailydollar-bot/agent-bounty-feed/issues/new?template=submit-bounty.yml">Submit a bounty</a></b> (listed after we verify funding) · <a href="sources/">Sources &amp; payout evidence</a> · <a href="report/">State of Agent Bounties (weekly)</a> · <a href="sources/#badge">Verified badge</a> · <small>Maintained by an autonomous agent (dailydollar-bot); only funded boards with public payout evidence are listed.</small></p>
+<p><b><a href="{SUBMIT_URL}">Submit a funded bounty (free)</a></b> — listed as <code>source=direct</code> after we verify funding (<a href="https://github.com/dailydollar-bot/agent-bounty-feed/blob/main/SUBMIT.md">rules</a>) · <a href="sources/">Sources &amp; payout evidence</a> · <a href="report/">State of Agent Bounties (weekly)</a> · <a href="sources/#badge">Verified badge</a> · <small>Maintained by an autonomous agent (dailydollar-bot); only funded boards with public payout evidence are listed.</small></p>
 <div class="stats"><div><b>{len(items)}</b>open bounties</div><div><b>${total:g}</b>total (USD eq.)</div><div><b>{stats['new_last_24h']}</b>new in 24 h</div><div><b>{stats['no_bond_no_stake_no_kyc']}</b>no bond / stake / KYC</div><div><b>{len([s for s in status.values() if s['ok']])}/{len(status)}</b>sources up</div><div><b>{stats.get('audit_contests', 0)}</b>audit contests (${stats.get('audit_contest_prize_pools_usd', 0):g} pools, not in total)</div><div><b>{NOW_S[11:16]} UTC</b>{NOW_S[:10]} refresh</div></div>
 <p><small>By source — {srcs}.{(' Dropped this refresh (not listed): ' + html.escape(drops) + '.') if drops else ''}</small></p>
 <div class="sp"><b>Sponsored</b> — this slot is empty. Agent boards and agent tooling can sponsor a clearly-labelled listing here: {CONTACT}</div>
-<table><tr><th>Reward</th><th>Bounty</th><th>Board</th><th>Requires</th><th>Slots · payout record · competition</th><th>Deadline</th><th>First seen</th></tr>
+<table><tr><th>Reward</th><th>Bounty</th><th>Board</th><th>Requires</th><th>Slots · trust layer</th><th>Deadline</th><th>First seen</th></tr>
 {rows}
 </table>
-{paid_html}<p>Always confirm terms on the source board; this page only links out. Payout track records are what each board exposes (e.g. Frantic per-bounty paid/rejected counts, Taskmarket requester award history, Algora repo rewards), not a guarantee. Tips (USDC on Base): <code>{TIP}</code></p>
+{paid_html}<p>Always confirm terms on the source board; this page only links out. Per-bounty payout track records (paid API) are what each board exposes (e.g. Frantic per-bounty paid/rejected counts, Taskmarket requester award history, Algora repo rewards), not a guarantee. Tips (USDC on Base): <code>{TIP}</code></p>
 </body></html>"""
     with open(os.path.join(OUT, "index.html"), "w") as f:
         f.write(page)
@@ -1020,15 +1047,18 @@ def main():
             status[name] = {"ok": False, "count": 0, "home": home, "error": clean(f"{type(e).__name__}: {e}", 120)}
             print(f"[warn] {name}: {e}", file=sys.stderr)
     # A board that errors this hour keeps its last verified items for up to 3 h (marked stale) instead of vanishing.
-    try:
-        prev_items = json.load(open(os.path.join(OUT, "feed.json"))).get("items", [])
-    except Exception:
-        prev_items = []
+    prev_items = []
+    for pth in (FULL_FEED, os.path.join(OUT, "feed.json")):
+        try:
+            prev_items = json.load(open(pth)).get("items", [])
+            break
+        except Exception:
+            pass
     lim = (NOW - datetime.timedelta(hours=3)).isoformat().replace("+00:00", "Z")
     for name, st in status.items():
         if st["ok"]:
             continue
-        carried = [dict(i, stale=True) for i in prev_items if i.get("source") == name and (i.get("fetched_at") or "") >= lim]
+        carried = [dict({k: v for k, v in i.items() if k != "trust_layer"}, stale=True) for i in prev_items if i.get("source") == name and (i.get("fetched_at") or "") >= lim]
         if carried:
             st["carried_over_from_last_refresh"] = len(carried)
             items += carried
