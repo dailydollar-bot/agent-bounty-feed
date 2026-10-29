@@ -36,13 +36,16 @@ const redactFeed = (feed) => ({ ...feed, items: (feed.items || []).map(redactIte
 const json = (obj, status = 200, headers = {}) =>
   new Response(JSON.stringify(obj, null, 1), { status, headers: { "content-type": "application/json", "access-control-allow-origin": "*", "access-control-expose-headers": "X-PAYMENT-RESPONSE, PAYMENT-RESPONSE, PAYMENT-REQUIRED", ...headers } });
 
+const SERVICE_NAME = "Agent Bounty Feed";
+const SERVICE_TAGS = ["bounties", "ai-agents", "jobs", "payout-evidence", "x402"];
+
 function requirements(url) {
   return {
     scheme: "exact", network: "base", maxAmountRequired: PRICE_ATOMIC,
     resource: url.origin + url.pathname,
-    description: "Filtered agent bounty feed with the paid-only per-bounty trust layer (payout track record, competition, verification evidence) for verified open, claimable, paid AI-agent bounties from public boards, Algora and verified direct submissions, refreshed hourly. trust_layer=lagging means trust evidence may be older than discovery (see trust_layer_generated_at, per-item trust_checked_at); if the trust layer is unavailable you get a free 503 and are not charged. Params: source, min_usd, network, no_bond, exclude_requires, q, since + after_id (gap-free new-since paging via has_more/next_since/next_after_id), sort, limit.",
+    description: "Hourly AI-agent bounty discovery with dated per-bounty payout history, competition and verification evidence (paid trust layer). Filter by source, reward, network and eligibility. 0.01 USDC per request on Base. Basic discovery is free (feed.json, /mcp, /earn-now); evidence coverage varies and does not guarantee payment. trust_layer=lagging means evidence may be older than discovery (see trust_layer_generated_at, per-item trust_checked_at); if the trust layer is unavailable you get a free 503 and are not charged. Params: source, min_usd, network, no_bond, exclude_requires, q, since + after_id (gap-free paging via has_more/next_since/next_after_id), sort, limit.",
     mimeType: "application/json", payTo: PAY_TO, maxTimeoutSeconds: 120, asset: USDC_BASE,
-    extra: { name: "USD Coin", version: "2" },
+    extra: { name: "USD Coin", version: "2", serviceName: SERVICE_NAME, tags: SERVICE_TAGS },
     outputSchema: { input: { type: "http", method: "GET", queryParams: { source: "csv", min_usd: "number", network: "string", no_bond: "0|1", exclude_requires: "csv", q: "string", since: "ISO-8601", after_id: "string", sort: "first_seen|reward", limit: "1-500" } } },
   };
 }
@@ -51,11 +54,11 @@ function requirementsV2(url) {
   const r = requirements(url);
   return { scheme: "exact", network: "eip155:8453", amount: PRICE_ATOMIC, asset: USDC_BASE, payTo: PAY_TO, maxTimeoutSeconds: 120, extra: r.extra };
 }
-function resourceV2(url) { return { url: url.origin + url.pathname, description: requirements(url).description, mimeType: "application/json" }; }
+function resourceV2(url) { return { url: url.origin + url.pathname, description: requirements(url).description, mimeType: "application/json", serviceName: SERVICE_NAME, tags: SERVICE_TAGS }; }
 
 const QP = { source: "csv of boards", min_usd: "number (items with unknown USD value are excluded)", network: "string", no_bond: "0|1", exclude_requires: "csv", q: "string", since: "ISO-8601", after_id: "page cursor (next_after_id), only with since", sort: "first_seen|reward", limit: "1-500" };
 const BAZAAR = {
-  info: { input: { type: "http", method: "GET", queryParams: { since: "2026-10-24T00:00:00Z", exclude_requires: "kyc,stake,bond", limit: "50" } }, output: { type: "json", example: { count: 1, has_more: false, next_after_id: null, next_since: "2026-10-24T10:00:00Z", items: [{ id: "frantic:142", title: "...", reward: 3, currency: "USD", url: "https://gofrantic.com/bounties/142" }] } } },
+  info: { input: { type: "http", method: "GET", queryParams: { since: "2026-10-24T00:00:00Z", exclude_requires: "kyc,stake,bond", limit: "50" } }, output: { type: "json", example: { count: 1, has_more: false, next_after_id: null, next_since: "2026-10-24T10:00:00Z", trust_layer: "full", items: [{ id: "frantic:142", title: "...", reward: 3, currency: "USD", url: "https://gofrantic.com/bounties/142", trust_checked_at: "2026-10-24T09:47:00Z", payout_track_record: { paid: 0, accepted: 0, rejected: 18, expired: 41, basis: "this bounty's claims so far (Frantic API)" }, competition: { active_claims: 0, delivered_awaiting_review: 2 }, verified: { checked_at: "2026-10-24T09:47:00Z", how: "Frantic detail API: work_status=open, funded, claim slots available" } }] } } },
   schema: { $schema: "https://json-schema.org/draft/2020-12/schema", type: "object", properties: { input: { type: "object", properties: { type: { const: "http" }, method: { const: "GET" }, queryParams: { type: "object", properties: Object.fromEntries(Object.keys(QP).map((k) => [k, { type: "string", description: QP[k] }])) } }, required: ["type", "method"] } }, required: ["input"] },
 };
 function openapi(origin) {
