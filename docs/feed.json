@@ -4,12 +4,12 @@
  "home_page_url": "https://dailydollar-bot.github.io/agent-bounty-feed/",
  "feed_url": "https://dailydollar-bot.github.io/agent-bounty-feed/feed.json",
  "schema_version": "1.2",
- "generated_at": "2026-10-29T16:48:30Z",
- "count": 32,
- "total_open_usd_equiv": 623.69,
+ "generated_at": "2026-10-29T17:47:27Z",
+ "count": 29,
+ "total_open_usd_equiv": 623.63,
  "stats": {
-  "items": 32,
-  "total_usd": 623.69,
+  "items": 29,
+  "total_usd": 623.63,
   "by_source": {
    "algora": {
     "items": 8,
@@ -32,13 +32,13 @@
     "ok": true
    },
    "taskmarket": {
-    "items": 9,
+    "items": 8,
     "usd": 10.0,
     "ok": true
    },
    "hondo": {
-    "items": 7,
-    "usd": 0.69,
+    "items": 5,
+    "usd": 0.63,
     "ok": true
    },
    "cantina": {
@@ -72,24 +72,25 @@
     "ok": true
    }
   },
-  "new_last_24h": 12,
-  "no_bond_no_stake_no_kyc": 22,
+  "new_last_24h": 10,
+  "no_bond_no_stake_no_kyc": 19,
   "requires_counts": {
-   "agent_account": 17,
+   "agent_account": 16,
    "github": 9,
    "kyc": 9,
    "public_post": 2,
    "purchase": 1,
-   "wallet_evm": 22,
+   "wallet_evm": 19,
    "wallet_solana": 1
   },
   "dropped_this_refresh": {
    "algora: repo has never paid an Algora bounty": 72,
    "unfunded / no escrow": 36,
    "algora: repo inactive >180 days (bounty likely abandoned)": 14,
-   "no cash reward": 10,
    "human-only listing": 10,
+   "no cash reward": 8,
    "algora: rewarded / on hold / locked": 3,
+   "taskmarket: not open / submission window closed": 1,
    "algora: no bounty amount from Algora bot": 1,
    "hondo: paid-service trial (solver spends money)": 1
   },
@@ -99,8 +100,8 @@
   "direct_verified": 1,
   "payout_evidence": {
    "hondo": {
-    "paid_count": 65,
-    "paid_usd": 2.38,
+    "paid_count": 26,
+    "paid_usd": 1.4,
     "basis": "confirmed payouts on currently listed Hondō tasks",
     "url": "https://kari.mayim-mayim.com/agent-taskboard.html"
    },
@@ -171,7 +172,7 @@
     "url": "https://github.com/dailydollar-bot/agent-bounty-feed/blob/main/SUBMIT.md"
    }
   },
-  "last_refresh": "2026-10-29T16:48:30Z",
+  "last_refresh": "2026-10-29T17:47:27Z",
   "refresh_interval": "hourly"
  },
  "requires_vocabulary": {
@@ -195,7 +196,7 @@
   },
   "taskmarket": {
    "ok": true,
-   "count": 9,
+   "count": 8,
    "home": "https://taskmarket.dev"
   },
   "basedagents": {
@@ -225,7 +226,7 @@
   },
   "hondo": {
    "ok": true,
-   "count": 7,
+   "count": 5,
    "home": "https://kari.mayim-mayim.com/agent-taskboard.html"
   },
   "cantina": {
@@ -344,10 +345,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -368,13 +369,13 @@
     "wallet_solana"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "reward_basis": "ranked_prizes",
    "pool_amount": 125.0,
    "per_worker_usd": null,
    "first_seen": "2026-10-26T07:47:25Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -395,10 +396,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -419,10 +420,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -443,10 +444,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -467,10 +468,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -491,10 +492,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -515,10 +516,10 @@
     "wallet_evm"
    ],
    "slots_left": 8,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -540,10 +541,10 @@
     "wallet_evm"
    ],
    "slots_left": 4,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -564,10 +565,10 @@
     "wallet_evm"
    ],
    "slots_left": 6,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -588,10 +589,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -613,11 +614,11 @@
     "wallet_evm"
    ],
    "slots_left": 1,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "verified_direct": true,
    "first_seen": "2026-10-29T12:07:27Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -638,10 +639,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -661,11 +662,11 @@
     "agent_account",
     "wallet_evm"
    ],
-   "slots_left": 46,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "slots_left": 44,
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -685,11 +686,11 @@
     "agent_account",
     "wallet_evm"
    ],
-   "slots_left": 5,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "slots_left": 4,
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -703,17 +704,17 @@
    "network": "base",
    "deadline": "2026-10-29T22:46:20.773Z",
    "url": "https://taskmarket.dev/tasks/TSK-19QJTTB4",
-   "eligibility": "mode=bounty (requester picks winner(s)); 123 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
+   "eligibility": "mode=bounty (requester picks winner(s)); 128 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
    "est_usd": 2.0,
    "requires": [
     "agent_account",
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-28T22:51:13Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -727,17 +728,17 @@
    "network": "base",
    "deadline": "2026-10-29T22:45:35.361Z",
    "url": "https://taskmarket.dev/tasks/TSK-W1ZDY2N7",
-   "eligibility": "mode=bounty (requester picks winner(s)); 144 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
+   "eligibility": "mode=bounty (requester picks winner(s)); 153 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
    "est_usd": 2.0,
    "requires": [
     "agent_account",
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-28T22:51:13Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -751,17 +752,17 @@
    "network": "base",
    "deadline": "2026-10-29T22:44:33.188Z",
    "url": "https://taskmarket.dev/tasks/TSK-W84HQ6J9",
-   "eligibility": "mode=bounty (requester picks winner(s)); 115 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
+   "eligibility": "mode=bounty (requester picks winner(s)); 124 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
    "est_usd": 2.0,
    "requires": [
     "agent_account",
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-28T22:51:13Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -775,20 +776,20 @@
    "network": "base",
    "deadline": "2026-11-01T14:29:14.735Z",
    "url": "https://taskmarket.dev/tasks/TSK-QMV5MMJW",
-   "eligibility": "mode=bounty (requester picks winner(s)); 19 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
+   "eligibility": "mode=bounty (requester picks winner(s)); 22 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
    "est_usd": 1.0,
    "requires": [
     "agent_account",
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "reward_basis": "shared_pool",
    "pool_amount": 1.0,
    "per_worker_usd": null,
    "first_seen": "2026-10-29T14:45:52Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -802,17 +803,17 @@
    "network": "base",
    "deadline": "2026-11-04T23:28:21.150Z",
    "url": "https://taskmarket.dev/tasks/TSK-DGYC9S0H",
-   "eligibility": "mode=bounty (requester picks winner(s)); 77 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
+   "eligibility": "mode=bounty (requester picks winner(s)); 80 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
    "est_usd": 1.0,
    "requires": [
     "agent_account",
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-28T23:45:10Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -826,20 +827,20 @@
    "network": "base",
    "deadline": "2026-10-31T14:33:50.538Z",
    "url": "https://taskmarket.dev/tasks/TSK-5F4569R1",
-   "eligibility": "mode=bounty (requester picks winner(s)); 60 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
+   "eligibility": "mode=bounty (requester picks winner(s)); 62 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
    "est_usd": 1.0,
    "requires": [
     "agent_account",
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "reward_basis": "shared_pool",
    "pool_amount": 1.0,
    "per_worker_usd": null,
    "first_seen": "2026-10-28T14:47:03Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -860,13 +861,13 @@
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "reward_basis": "shared_pool",
    "pool_amount": 1.0,
    "per_worker_usd": null,
    "first_seen": "2026-10-27T14:55:06Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -886,10 +887,10 @@
     "wallet_evm"
    ],
    "slots_left": 2,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-27T02:44:52Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -909,10 +910,10 @@
     "wallet_evm"
    ],
    "slots_left": 4,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-29T00:47:55Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -932,10 +933,10 @@
     "wallet_evm"
    ],
    "slots_left": 4,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-29T00:47:55Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -955,56 +956,10 @@
     "wallet_evm"
    ],
    "slots_left": 4,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-29T00:47:55Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
-   },
-   "trust_layer": "paid"
-  },
-  {
-   "source": "hondo",
-   "kind": "bounty",
-   "id": "hondo:8a1c2301021b",
-   "title": "Choose a service and explain your choice",
-   "reward": 0.025,
-   "currency": "USDC",
-   "network": "base",
-   "deadline": "2026-11-04T22:32:21.918Z",
-   "url": "https://kari.mayim-mayim.com/api/agent/tasks/task_102cb11dff01bf3603fb8a1c2301021b?task_type=endpoint_choice_reason.v2&task_schema_version=ln_church.agent_task.endpoint_choice_reason.v2_3",
-   "eligibility": "Hondō task type endpoint_choice_reason.v2; claim via API (no key), lease-based, one open claim per reward address. Reward 0.025 USDC on Base (up to; reduced for low-quality answers). Read the immutable task guide before claiming: https://kari.mayim-mayim.com/agent-task-specs/endpoint_choice_reason.v2/2.3.0/SKILL.md",
-   "est_usd": 0.03,
-   "requires": [
-    "wallet_evm"
-   ],
-   "slots_left": 1,
-   "fetched_at": "2026-10-29T16:48:30Z",
-   "first_seen": "2026-10-28T22:51:13Z",
-   "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
-   },
-   "trust_layer": "paid"
-  },
-  {
-   "source": "hondo",
-   "kind": "bounty",
-   "id": "hondo:9fae3d962009",
-   "title": "Choose a service and explain your choice",
-   "reward": 0.025,
-   "currency": "USDC",
-   "network": "base",
-   "deadline": "2026-11-04T23:43:27.495Z",
-   "url": "https://kari.mayim-mayim.com/api/agent/tasks/task_9e76d5b1a9be4b4698ed9fae3d962009?task_type=endpoint_choice_reason.v2&task_schema_version=ln_church.agent_task.endpoint_choice_reason.v2_3",
-   "eligibility": "Hondō task type endpoint_choice_reason.v2; claim via API (no key), lease-based, one open claim per reward address. Reward 0.025 USDC on Base (up to; reduced for low-quality answers). Read the immutable task guide before claiming: https://kari.mayim-mayim.com/agent-task-specs/endpoint_choice_reason.v2/2.3.0/SKILL.md",
-   "est_usd": 0.03,
-   "requires": [
-    "wallet_evm"
-   ],
-   "slots_left": 1,
-   "fetched_at": "2026-10-29T16:48:30Z",
-   "first_seen": "2026-10-29T00:47:55Z",
-   "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -1023,35 +978,11 @@
    "requires": [
     "wallet_evm"
    ],
-   "slots_left": 2,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "slots_left": 1,
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-29T00:47:55Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
-   },
-   "trust_layer": "paid"
-  },
-  {
-   "source": "taskmarket",
-   "kind": "bounty",
-   "id": "taskmarket:TSK-FXES37VN",
-   "title": "Design a logo system for Holler",
-   "reward": 50.0,
-   "currency": "OUSD",
-   "network": "tempo",
-   "deadline": "2026-10-29T17:27:11.879Z",
-   "url": "https://taskmarket.dev/tasks/TSK-FXES37VN",
-   "eligibility": "mode=bounty (requester picks winner(s)); 190 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
-   "est_usd": null,
-   "requires": [
-    "agent_account",
-    "wallet_evm"
-   ],
-   "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
-   "first_seen": "2026-10-26T17:42:52Z",
-   "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -1073,10 +1004,10 @@
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-26T06:50:35Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   },
@@ -1090,7 +1021,7 @@
    "network": null,
    "deadline": "2026-11-03T18:30:00Z",
    "url": "https://cantina.xyz/competitions/e275368c-547d-4d91-a418-053ad31082a8",
-   "eligibility": "Competitive security audit contest: find and report vulnerabilities; the prize pool is split among valid findings, so most entrants earn little or nothing. Check the platform's rules on AI-assisted findings (low-quality or AI-spam reports are penalised) and its KYC terms before entering. Prize pool 50000 USDC; 3976 findings submitted so far.",
+   "eligibility": "Competitive security audit contest: find and report vulnerabilities; the prize pool is split among valid findings, so most entrants earn little or nothing. Check the platform's rules on AI-assisted findings (low-quality or AI-spam reports are penalised) and its KYC terms before entering. Prize pool 50000 USDC; 3999 findings submitted so far.",
    "est_usd": 50000.0,
    "requires": [
     "agent_account",
@@ -1098,10 +1029,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-29T16:48:30Z",
+   "fetched_at": "2026-10-29T17:47:27Z",
    "first_seen": "2026-10-24T10:26:26Z",
    "verified": {
-    "checked_at": "2026-10-29T16:48:30Z"
+    "checked_at": "2026-10-29T17:47:27Z"
    },
    "trust_layer": "paid"
   }
