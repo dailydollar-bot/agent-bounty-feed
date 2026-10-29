@@ -209,4 +209,66 @@ ok("earn-now output carries no trust layer and links the submit form", () => {
     assert.equal(c.feed.items[0].verified.checked_at, "2026-10-27T01:00:00Z"); assert.equal(c.feed.items[1].trust_layer_missing, true);
   });
 }
+// ---- No-charge-without-trust guard + lagging honesty (Codex strategy, shared#1)
+{
+  const OLD = "2026-10-28T00:00:00Z", NEW = "2026-10-28T01:00:00Z";
+  const changed = [
+    { ...T.redactItem(RICH), id: "direct:demo" },
+    { ...T.redactItem({ ...RICH, id: "r:1" }), reward: 9 },
+    { ...T.redactItem({ ...RICH, id: "s:1", status: "open" }), status: "closed" },
+    { ...T.redactItem({ ...RICH, id: "d:1" }), deadline: "2026-12-01T00:00:00Z" },
+    { ...T.redactItem({ ...RICH, id: "u:1" }), url: "https://example.com/other" },
+  ];
+  const full = { generated_at: OLD, items: [RICH, { ...RICH, id: "r:1" }, { ...RICH, id: "s:1", status: "open" }, { ...RICH, id: "d:1" }, { ...RICH, id: "u:1" }] };
+  const e = T.enrich({ generated_at: NEW, items: changed }, full);
+  const by = Object.fromEntries(e.items.map(i => [i.id, i]));
+  ok("lagging enrich: unchanged item gets trust + trust_checked_at from the trust source", () => {
+    assert.equal(by["direct:demo"].payout_track_record.paid, 7); assert.equal(by["direct:demo"].trust_checked_at, "2026-10-27T01:00:00Z");
+    assert.equal(by["direct:demo"].trust_layer_missing, undefined);
+  });
+  ok("lagging enrich: reward/status/deadline/url changed vs older full copy -> no stale trust, marked missing with reason", () => {
+    for (const [id, k] of [["r:1", "reward"], ["s:1", "status"], ["d:1", "deadline"], ["u:1", "url"]]) {
+      const i = by[id];
+      for (const f of T.TRUST_FIELDS) assert.equal(f in i, false, id + " " + f);
+      assert.equal(i.verified.how, undefined, id); assert.equal(i.trust_layer_missing, true, id);
+      assert.match(i.trust_missing_reason, new RegExp(k), id); assert.equal(i.trust_checked_at, undefined, id);
+    }
+    assert.deepEqual(T.diverged({ reward: 5, url: "a" }, { reward: 5, url: "a" }), []);
+  });
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response(JSON.stringify({ generated_at: NEW, items: changed.slice(1) }));
+  const allChanged = await T.getPaidFeed(null, full);
+  globalThis.fetch = realFetch;
+  ok("getPaidFeed: lagging with zero usable enrichment is treated as unavailable_this_refresh", () => {
+    assert.equal(allChanged.trust_layer, "unavailable_this_refresh");
+  });
+  ok("trustGuard: blocks unavailable/unknown, passes full/lagging", () => {
+    assert.match(T.trustGuard({ trust_layer: "unavailable_this_refresh" }).error, /not charged/);
+    assert.ok(T.trustGuard(null)); assert.ok(T.trustGuard({ trust_layer: "weird" }));
+    assert.equal(T.trustGuard({ trust_layer: "full" }), null); assert.equal(T.trustGuard({ trust_layer: "lagging" }), null);
+  });
+  // End-to-end through handleBounties with a stubbed facilitator: settle must never be called without trust.
+  const run = async (got) => {
+    const calls = [];
+    const deps = { facilitator: async (path) => { calls.push(path); return path === "/verify" ? { isValid: true } : { success: true, transaction: "0xt" }; },
+      getPaidFeed: async () => { if (got instanceof Error) throw got; return got; } };
+    const url = new URL("https://x/v1/bounties");
+    const r = await T.handleBounties(new Request(url, { headers: { "X-PAYMENT": btoa(JSON.stringify({ x402Version: 1 })) } }), url, null, deps);
+    return { r, calls, body: await r.json() };
+  };
+  const un = await run({ feed: { generated_at: NEW, items: [T.redactItem(RICH)] }, trust_layer: "unavailable_this_refresh", trust_layer_generated_at: null });
+  ok("handleBounties: unavailable_this_refresh -> free 503, /verify only, /settle NOT called", () => {
+    assert.equal(un.r.status, 503); assert.deepEqual(un.calls, ["/verify"]);
+    assert.match(un.body.error, /not charged/); assert.equal(un.r.headers.get("X-PAYMENT-RESPONSE"), null);
+    assert.equal(JSON.stringify(un.body).includes("direct:demo"), false);
+  });
+  const down = await run(new Error("x"));
+  ok("handleBounties: feed down -> free 503, /settle NOT called", () => { assert.equal(down.r.status, 503); assert.deepEqual(down.calls, ["/verify"]); });
+  const good = await run({ feed: { generated_at: OLD, items: [RICH] }, trust_layer: "full", trust_layer_generated_at: OLD });
+  ok("handleBounties: full trust -> settles once and returns trust layer", () => {
+    assert.equal(good.r.status, 200); assert.deepEqual(good.calls, ["/verify", "/settle"]);
+    assert.equal(good.body.trust_layer, "full"); assert.equal(good.body.items[0].payout_track_record.paid, 7);
+    assert.ok(good.r.headers.get("X-PAYMENT-RESPONSE"));
+  });
+}
 console.log(`\n${n} unit tests passed`);

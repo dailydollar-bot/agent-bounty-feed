@@ -40,7 +40,7 @@ function requirements(url) {
   return {
     scheme: "exact", network: "base", maxAmountRequired: PRICE_ATOMIC,
     resource: url.origin + url.pathname,
-    description: "Filtered agent bounty feed with the paid-only per-bounty trust layer (payout track record, competition, verification evidence) for verified open, claimable, paid AI-agent bounties from public boards, Algora and verified direct submissions, refreshed hourly. Params: source, min_usd, network, no_bond, exclude_requires, q, since + after_id (gap-free new-since paging via has_more/next_since/next_after_id), sort, limit.",
+    description: "Filtered agent bounty feed with the paid-only per-bounty trust layer (payout track record, competition, verification evidence) for verified open, claimable, paid AI-agent bounties from public boards, Algora and verified direct submissions, refreshed hourly. trust_layer=lagging means trust evidence may be older than discovery (see trust_layer_generated_at, per-item trust_checked_at); if the trust layer is unavailable you get a free 503 and are not charged. Params: source, min_usd, network, no_bond, exclude_requires, q, since + after_id (gap-free new-since paging via has_more/next_since/next_after_id), sort, limit.",
     mimeType: "application/json", payTo: PAY_TO, maxTimeoutSeconds: 120, asset: USDC_BASE,
     extra: { name: "USD Coin", version: "2" },
     outputSchema: { input: { type: "http", method: "GET", queryParams: { source: "csv", min_usd: "number", network: "string", no_bond: "0|1", exclude_requires: "csv", q: "string", since: "ISO-8601", after_id: "string", sort: "first_seen|reward", limit: "1-500" } } },
@@ -67,7 +67,7 @@ function openapi(origin) {
     "x-free-vs-paid": "Free routes (static feed.json, /mcp, /earn-now) omit the per-item trust layer. Paid /v1/bounties items include payout_track_record, competition, verified.how, verification_evidence and extra.", "x-submit-bounty": SUBMIT_URL,
     paths: { "/v1/bounties": { get: { operationId: "listBounties", summary: "Filtered, new-since agent bounty list with the full per-bounty trust layer (payout track record, competition, verification evidence)", parameters: params,
       "x-payment-info": { protocols: ["x402"], price: { mode: "fixed", currency: "USD", amount: "0.01" }, network: "base", asset: USDC_BASE, payTo: PAY_TO },
-      responses: { "200": { description: "Filtered bounty list (JSON). Top-level: generated_at, trust_layer (full|lagging|unavailable_this_refresh), trust_layer_generated_at, has_more, next_since, next_after_id, count, total_matching, sort, stats, items[]. Each item: discovery fields plus trust layer payout_track_record, competition, verified{checked_at,how,degraded}, verification_evidence (direct), extra." }, "400": { description: "Bad parameters (not charged)" }, "402": { description: "Payment required (x402, 0.01 USDC on Base)" } } } } },
+      responses: { "200": { description: "Filtered bounty list (JSON). Top-level: generated_at, trust_layer (full|lagging), trust_layer_generated_at (when the trust evidence was gathered; with lagging it is older than generated_at/public discovery), has_more, next_since, next_after_id, count, total_matching, sort, stats, items[]. Each item: discovery fields plus trust layer payout_track_record, competition, verified{checked_at,how,degraded}, verification_evidence (direct), extra, trust_checked_at (per-item trust freshness). With lagging, items new or changed (reward/currency/status/deadline/url) since the trust snapshot carry trust_layer_missing=true + trust_missing_reason instead of stale trust fields." }, "400": { description: "Bad parameters (not charged)" }, "503": { description: "Feed or paid trust layer unavailable this refresh: returned before settlement, you are not charged" }, "402": { description: "Payment required (x402, 0.01 USDC on Base)" } } } } },
   };
 }
 
@@ -83,24 +83,48 @@ async function getPublicFeed() {
 async function getFeed() { return redactFeed(await getPublicFeed()); }
 // Paid route: the bundled full feed when it is at least as new as the public one; otherwise the public items
 // enriched with the trust layer from the bundled copy (by id), labelled "lagging".
+// Lagging honesty: an item whose discovery facts (reward, currency, status, deadline, url) diverged from the older
+// trust snapshot does NOT inherit the old trust fields; it is marked trust_layer_missing with a reason instead.
+// Every enriched item carries trust_checked_at = when its trust evidence was gathered (may be older than discovery).
+const DIVERGE_KEYS = ["reward", "currency", "status", "deadline", "url"];
+function diverged(pubItem, fullItem) {
+  return DIVERGE_KEYS.filter(k => (k in pubItem || k in fullItem) && JSON.stringify(pubItem[k] ?? null) !== JSON.stringify(fullItem[k] ?? null));
+}
+const trustCheckedAt = (f, full) => (f && f.verified && typeof f.verified === "object" && f.verified.checked_at) || (full && full.generated_at) || null;
 function enrich(pub, full) {
   const byId = new Map((full.items || []).map(i => [i.id, i]));
   const items = (pub.items || []).map(i => {
     const f = byId.get(i.id); const o = { ...i }; delete o.trust_layer;
-    if (!f) return { ...o, trust_layer: "paid", trust_layer_missing: true };
+    if (!f) return { ...o, trust_layer: "paid", trust_layer_missing: true, trust_missing_reason: "new since trust snapshot" };
+    const d = diverged(i, f);
+    if (d.length) return { ...o, trust_layer: "paid", trust_layer_missing: true, trust_missing_reason: "changed since trust snapshot: " + d.join(",") };
     for (const k of TRUST_FIELDS) if (k in f) o[k] = f[k];
     if (f.verified && typeof f.verified === "object" && f.verified.how) o.verified = { ...(o.verified || {}), how: f.verified.how };
+    o.trust_checked_at = trustCheckedAt(f, full);
     return o;
   });
   return { ...pub, items };
 }
+const stampFull = (full) => ({ ...full, items: (full.items || []).map(i => ({ ...i, trust_checked_at: trustCheckedAt(i, full) })) });
 async function getPaidFeed(env, full = EMBEDDED_FULL) {
   const p = await getPublicFeed().catch(() => null);
   const fg = full && String(full.generated_at || ""), pg = p && String(p.generated_at || "");
-  if (full && (!p || fg >= pg)) return { feed: full, trust_layer: "full", trust_layer_generated_at: full.generated_at };
-  if (p && full) return { feed: enrich(p, full), trust_layer: "lagging", trust_layer_generated_at: full.generated_at };
+  if (full && (!p || fg >= pg)) return { feed: stampFull(full), trust_layer: "full", trust_layer_generated_at: full.generated_at };
+  if (p && full) {
+    const feed = enrich(p, full), its = feed.items || [];
+    // No usable enrichment at all (every item new/changed) is the same as no trust layer.
+    if (its.length && its.every(i => i.trust_layer_missing)) return { feed: p, trust_layer: "unavailable_this_refresh", trust_layer_generated_at: full.generated_at };
+    return { feed, trust_layer: "lagging", trust_layer_generated_at: full.generated_at };
+  }
   if (p) return { feed: p, trust_layer: "unavailable_this_refresh", trust_layer_generated_at: null };
   throw new Error("feed unavailable");
+}
+// No-charge-without-trust: the paid product IS the trust layer. If it is unavailable this refresh we answer a free
+// 503 BEFORE settlement (payment was only verified, never settled), mirroring the feed-unavailable path.
+const NOT_CHARGED_TRUST = "paid trust layer unavailable this refresh; you were not charged (payment verified but not settled). Retry after the next hourly refresh; free discovery feed: " + UPSTREAM;
+function trustGuard(got) {
+  if (!got || got.trust_layer === "unavailable_this_refresh" || !["full", "lagging"].includes(got.trust_layer)) return { error: NOT_CHARGED_TRUST, trust_layer: (got && got.trust_layer) || null, retry_after_seconds: 3600 };
+  return null;
 }
 
 async function facilitator(path, payload, req, version = 1) {
@@ -310,7 +334,7 @@ async function handle(request, url, env) {
     return json({ error: "not found", see: url.origin + "/" }, 404);
 }
 
-async function handleBounties(request, url, env) {
+async function handleBounties(request, url, env, deps = { facilitator, getPaidFeed }) {
     const { opts, errs } = parseQuery(url.searchParams);
     if (errs.length) return json({ error: "bad request (not charged)", details: errs, see: url.origin + "/" }, 400);
     const req = requirements(url), req2 = requirementsV2(url);
@@ -320,16 +344,18 @@ async function handleBounties(request, url, env) {
     const version = h2 ? 2 : 1, preq = version === 2 ? req2 : req;
     let payload;
     try { payload = b64json(h2 || h1); } catch { return required("invalid payment header"); }
-    const v = await facilitator("/verify", payload, preq, version);
+    const v = await deps.facilitator("/verify", payload, preq, version);
     if (!v.isValid) return required(v.invalidReason || "payment invalid");
     let got;
-    try { got = await getPaidFeed(env); } catch (e) { return json({ error: "feed temporarily unavailable; you were not charged" }, 503); }
+    try { got = await deps.getPaidFeed(env); } catch (e) { return json({ error: "feed temporarily unavailable; you were not charged" }, 503); }
+    const blocked = trustGuard(got);
+    if (blocked) return json(blocked, 503, { "retry-after": "3600", "cache-control": "no-store" }); // never reaches /settle
     const body = filter(got.feed, url.searchParams, opts, got.trust_layer, got.trust_layer_generated_at);
-    const s = await facilitator("/settle", payload, preq, version);
+    const s = await deps.facilitator("/settle", payload, preq, version);
     if (!s.success) return required(s.errorReason || "settlement failed");
     const enc = b64(s);
     return json(body, 200, { "X-PAYMENT-RESPONSE": enc, "PAYMENT-RESPONSE": enc });
 }
 
 // Pure helpers for tests (not routes).
-export const _test = { knownUsd, earnUsd, parseQuery, applyFilter, earnNow, filter, redactItem, redactFeed, getPaidFeed, TRUST_FIELDS };
+export const _test = { knownUsd, earnUsd, parseQuery, applyFilter, earnNow, filter, redactItem, redactFeed, getPaidFeed, TRUST_FIELDS, enrich, diverged, trustGuard, handleBounties };

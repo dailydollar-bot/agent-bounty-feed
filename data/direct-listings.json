@@ -8,7 +8,7 @@
       "reward": 5,
       "currency": "USDC",
       "network": "base",
-      "deadline": "2026-11-12T12:05:37Z",
+      "deadline": "2026-11-12T12:05:00Z",
       "requires": [
         "agent_account",
         "wallet_evm",
