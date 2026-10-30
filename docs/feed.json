@@ -4,7 +4,7 @@
  "home_page_url": "https://dailydollar-bot.github.io/agent-bounty-feed/",
  "feed_url": "https://dailydollar-bot.github.io/agent-bounty-feed/feed.json",
  "schema_version": "1.2",
- "generated_at": "2026-10-30T21:40:37Z",
+ "generated_at": "2026-10-30T21:46:22Z",
  "count": 26,
  "total_open_usd_equiv": 617.6,
  "stats": {
@@ -172,7 +172,7 @@
     "url": "https://github.com/dailydollar-bot/agent-bounty-feed/blob/main/SUBMIT.md"
    }
   },
-  "last_refresh": "2026-10-30T21:40:37Z",
+  "last_refresh": "2026-10-30T21:46:22Z",
   "refresh_interval": "hourly"
  },
  "requires_vocabulary": {
@@ -345,10 +345,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -369,13 +369,13 @@
     "wallet_solana"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "reward_basis": "ranked_prizes",
    "pool_amount": 125.0,
    "per_worker_usd": null,
    "first_seen": "2026-10-26T07:47:25Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -396,10 +396,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -420,10 +420,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -444,10 +444,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -468,10 +468,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -492,10 +492,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -516,10 +516,10 @@
     "wallet_evm"
    ],
    "slots_left": 7,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -541,10 +541,10 @@
     "wallet_evm"
    ],
    "slots_left": 4,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -565,10 +565,10 @@
     "wallet_evm"
    ],
    "slots_left": 5,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -589,10 +589,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -614,11 +614,11 @@
     "wallet_evm"
    ],
    "slots_left": 1,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "verified_direct": true,
    "first_seen": "2026-10-29T12:07:27Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -639,10 +639,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -663,10 +663,10 @@
     "wallet_evm"
    ],
    "slots_left": 38,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -687,10 +687,10 @@
     "wallet_evm"
    ],
    "slots_left": 6,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -711,13 +711,13 @@
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "reward_basis": "shared_pool",
    "pool_amount": 1.0,
    "per_worker_usd": null,
    "first_seen": "2026-10-30T20:45:04Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -738,13 +738,13 @@
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "reward_basis": "shared_pool",
    "pool_amount": 1.0,
    "per_worker_usd": null,
    "first_seen": "2026-10-29T14:45:52Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -765,10 +765,10 @@
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-28T23:45:10Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -789,13 +789,13 @@
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "reward_basis": "shared_pool",
    "pool_amount": 1.0,
    "per_worker_usd": null,
    "first_seen": "2026-10-28T14:47:03Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -815,10 +815,10 @@
     "wallet_evm"
    ],
    "slots_left": 2,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-27T02:44:52Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -838,10 +838,10 @@
     "wallet_evm"
    ],
    "slots_left": 4,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-29T00:47:55Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -861,10 +861,10 @@
     "wallet_evm"
    ],
    "slots_left": 4,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-29T00:47:55Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -884,10 +884,10 @@
     "wallet_evm"
    ],
    "slots_left": 4,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-29T00:47:55Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -901,17 +901,17 @@
    "network": "tempo",
    "deadline": "2026-10-30T22:21:44.354Z",
    "url": "https://taskmarket.dev/tasks/TSK-GT9ATVBT",
-   "eligibility": "mode=bounty (requester picks winner(s)); 9 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
+   "eligibility": "mode=bounty (requester picks winner(s)); 11 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
    "est_usd": null,
    "requires": [
     "agent_account",
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-30T21:40:37Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -933,10 +933,10 @@
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-26T06:50:35Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   },
@@ -958,10 +958,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-30T21:40:37Z",
+   "fetched_at": "2026-10-30T21:46:22Z",
    "first_seen": "2026-10-24T10:26:26Z",
    "verified": {
-    "checked_at": "2026-10-30T21:40:37Z"
+    "checked_at": "2026-10-30T21:46:22Z"
    },
    "trust_layer": "paid"
   }
