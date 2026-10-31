@@ -271,4 +271,34 @@ ok("earn-now output carries no trust layer and links the submit form", () => {
     assert.ok(good.r.headers.get("X-PAYMENT-RESPONSE"));
   });
 }
+
+// ---- paid_evidence coverage hint + id filter (31 Oct, Codex "state coverage before purchase")
+{
+  const FULLX = { generated_at: "2026-10-31T00:00:00Z", items: [
+    { id: "frantic:1", reward: 5, currency: "USD", url: "u1", payout_track_record: { paid: 3 }, competition: { active_claims: 1 }, verified: { checked_at: "2026-10-31T00:00:00Z", how: "api" } },
+    { id: "frantic:2", reward: 5, currency: "USD", url: "u2", payout_track_record: { paid: 1 } },
+    { id: "x:bare", reward: 1, currency: "USD", url: "u3", extra: {} },
+  ] };
+  ok("paidEvidence: lists field NAMES only, url with id, never values", () => {
+    const e = T.paidEvidence({ id: "frantic:1", reward: 5, currency: "USD", url: "u1" }, FULLX);
+    assert.deepEqual(e.available, ["payout_track_record", "competition", "verified.how"]);
+    assert.ok(e.url.endsWith("/v1/bounties?id=frantic%3A1")); assert.equal(e.trust_checked_at, "2026-10-31T00:00:00Z");
+    assert.ok(!JSON.stringify(e).includes("active_claims"));
+  });
+  ok("paidEvidence: changed / new / empty items get no buy url", () => {
+    assert.equal(T.paidEvidence({ id: "frantic:2", reward: 9, currency: "USD", url: "u2" }, FULLX).url, undefined);
+    assert.equal(T.paidEvidence({ id: "new:1", reward: 9 }, FULLX).url, undefined);
+    assert.deepEqual(T.paidEvidence({ id: "x:bare", reward: 1, currency: "USD", url: "u3" }, FULLX).available, []);
+  });
+  ok("id filter: exact ids only, >50 ids rejected", () => {
+    const ids = T.applyFilter(FULLX, q("id=frantic:2,x:bare")).items.map(i => i.id).sort();
+    assert.deepEqual(ids, ["frantic:2", "x:bare"]);
+    const many = Array.from({ length: 51 }, (_, i) => "a:" + i).join(",");
+    assert.ok(T.parseQuery(new URLSearchParams("id=" + many)).errs.length === 1);
+  });
+  ok("enrich (paid lagging path) strips the free paid_evidence hint", () => {
+    const pub = { generated_at: "2026-10-31T01:00:00Z", items: [{ id: "frantic:1", reward: 5, currency: "USD", url: "u1", paid_evidence: { available: ["x"] } }] };
+    assert.equal(T.enrich(pub, FULLX).items[0].paid_evidence, undefined);
+  });
+}
 console.log(`\n${n} unit tests passed`);

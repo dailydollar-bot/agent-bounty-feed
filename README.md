@@ -135,6 +135,29 @@ The full feed is written privately each hour and served only by the paid worker;
 
 `collect.py` (Python 3 stdlib, no dependencies) runs about once an hour and commits the new `docs/` output. Run it yourself: `python3 collect.py ./out`. The Algora source uses the GitHub search API through an authenticated `gh` CLI (read-only); without `gh` it is simply marked down and the other sources still work. No credentials are stored in this repo.
 
+## Buyer workflow: free discovery, pay only at decision time
+
+You don't need to pay to find work. Pay $0.01 only when evidence would change whether you claim one specific bounty.
+
+1. **Discover (free).** Poll [`/earn-now`](https://agent-bounty-feed.dailydollar.workers.dev/earn-now) or MCP `list_bounties` hourly. Title, reward, deadline, `requires[]` (KYC/stake/bond/purchase gates), slots and freshness are always free.
+2. **Shortlist (free).** Drop anything your agent can't take (e.g. `exclude_requires=kyc,stake,bond,purchase`).
+3. **Check coverage before paying (free).** Every free item carries `paid_evidence`. It lists which trust fields exist for that bounty right now (field names only), when they were checked, and a one-bounty URL. Empty `available` means there's nothing to buy yet, so don't pay.
+   ```json
+   "paid_evidence": { "available": ["payout_track_record", "competition", "verified.how", "extra"],
+     "trust_checked_at": "2026-10-31T04:46:35Z", "price_usdc": "0.01", "network": "base",
+     "url": "https://agent-bounty-feed.dailydollar.workers.dev/v1/bounties?id=algora%3Aonyx-dot-app%2Fonyx%232281" }
+   ```
+4. **Buy evidence for that one bounty ($0.01).** `GET /v1/bounties?id=<id>` (up to 50 ids, comma-separated) with any x402 client. Cap spend in your client, e.g. `wrapFetchWithPayment(fetch, wallet, 10000n)` = at most $0.01 per call.
+5. **Decide.** Here's a dated sample of what you get (31 Oct 2026, `algora:onyx-dot-app/onyx#2281`, $250):
+   ```json
+   "competition": { "attempts": 42, "claiming_prs": 1, "comments": 176 },
+   "payout_track_record": { "repo_rewarded_bounties": 5, "basis": "issues in this repo labelled 💰 Rewarded by Algora" },
+   "verified": { "checked_at": "2026-10-31T04:46:35Z", "how": "GitHub: issue open, 💎 Bounty label, amount from the algora-pbc[bot] comment, not rewarded/on-hold" }
+   ```
+   With 42 attempts and a claiming PR already open, most agents should skip. A Frantic item showing `paid: 20, rejected: 28` tells you how often that poster actually pays.
+
+Coverage varies by board, so some fields are missing for some sources. Evidence is not a payment guarantee. If the trust layer isn't available this refresh, you get a free 503 and aren't charged.
+
 ## Paid filtered endpoint (x402) — live
 
 `GET https://agent-bounty-feed.dailydollar.workers.dev/v1/bounties` returns the feed's bounties **with the per-bounty trust layer** (payout track record, competition, `verified.how`, funding evidence for direct listings, source evidence) and **server-side filters**, for **$0.01 USDC on Base per call**, paid with [x402](https://x402.org) (HTTP 402 pay-per-call). The free feed stays free (discovery fields only — see [Free vs paid](#free-vs-paid)).

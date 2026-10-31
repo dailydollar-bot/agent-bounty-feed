@@ -43,10 +43,10 @@ function requirements(url) {
   return {
     scheme: "exact", network: "base", maxAmountRequired: PRICE_ATOMIC,
     resource: url.origin + url.pathname,
-    description: "Hourly AI-agent bounty discovery with dated per-bounty payout history, competition and verification evidence (paid trust layer). Filter by source, reward, network and eligibility. 0.01 USDC per request on Base. Basic discovery is free (feed.json, /mcp, /earn-now); evidence coverage varies and does not guarantee payment. trust_layer=lagging means evidence may be older than discovery (see trust_layer_generated_at, per-item trust_checked_at); if the trust layer is unavailable you get a free 503 and are not charged. Params: source, min_usd, network, no_bond, exclude_requires, q, since + after_id (gap-free paging via has_more/next_since/next_after_id), sort, limit.",
+    description: "Hourly AI-agent bounty discovery with dated per-bounty payout history, competition and verification evidence (paid trust layer). Filter by source, reward, network and eligibility. 0.01 USDC per request on Base. Basic discovery is free (feed.json, /mcp, /earn-now); evidence coverage varies and does not guarantee payment. trust_layer=lagging means evidence may be older than discovery (see trust_layer_generated_at, per-item trust_checked_at); if the trust layer is unavailable you get a free 503 and are not charged. Params: id (one or more bounty ids, e.g. id=frantic:142: buy evidence for just the bounty you are about to claim; free routes show per-item paid_evidence.available first), source, min_usd, network, no_bond, exclude_requires, q, since + after_id (gap-free paging via has_more/next_since/next_after_id), sort, limit.",
     mimeType: "application/json", payTo: PAY_TO, maxTimeoutSeconds: 120, asset: USDC_BASE,
     extra: { name: "USD Coin", version: "2", serviceName: SERVICE_NAME, tags: SERVICE_TAGS },
-    outputSchema: { input: { type: "http", method: "GET", queryParams: { source: "csv", min_usd: "number", network: "string", no_bond: "0|1", exclude_requires: "csv", q: "string", since: "ISO-8601", after_id: "string", sort: "first_seen|reward", limit: "1-500" } } },
+    outputSchema: { input: { type: "http", method: "GET", queryParams: { id: "csv", source: "csv", min_usd: "number", network: "string", no_bond: "0|1", exclude_requires: "csv", q: "string", since: "ISO-8601", after_id: "string", sort: "first_seen|reward", limit: "1-500" } } },
   };
 }
 
@@ -56,7 +56,7 @@ function requirementsV2(url) {
 }
 function resourceV2(url) { return { url: url.origin + url.pathname, description: requirements(url).description, mimeType: "application/json", serviceName: SERVICE_NAME, tags: SERVICE_TAGS }; }
 
-const QP = { source: "csv of boards", min_usd: "number (items with unknown USD value are excluded)", network: "string", no_bond: "0|1", exclude_requires: "csv", q: "string", since: "ISO-8601", after_id: "page cursor (next_after_id), only with since", sort: "first_seen|reward", limit: "1-500" };
+const QP = { id: "csv of bounty ids (max 50), e.g. frantic:142 - evidence for just the bounty you are deciding on", source: "csv of boards", min_usd: "number (items with unknown USD value are excluded)", network: "string", no_bond: "0|1", exclude_requires: "csv", q: "string", since: "ISO-8601", after_id: "page cursor (next_after_id), only with since", sort: "first_seen|reward", limit: "1-500" };
 const BAZAAR = {
   info: { input: { type: "http", method: "GET", queryParams: { since: "2026-10-24T00:00:00Z", exclude_requires: "kyc,stake,bond", limit: "50" } }, output: { type: "json", example: { count: 1, has_more: false, next_after_id: null, next_since: "2026-10-24T10:00:00Z", trust_layer: "full", items: [{ id: "frantic:142", title: "...", reward: 3, currency: "USD", url: "https://gofrantic.com/bounties/142", trust_checked_at: "2026-10-24T09:47:00Z", payout_track_record: { paid: 0, accepted: 0, rejected: 18, expired: 41, basis: "this bounty's claims so far (Frantic API)" }, competition: { active_claims: 0, delivered_awaiting_review: 2 }, verified: { checked_at: "2026-10-24T09:47:00Z", how: "Frantic detail API: work_status=open, funded, claim slots available" } }] } } },
   schema: { $schema: "https://json-schema.org/draft/2020-12/schema", type: "object", properties: { input: { type: "object", properties: { type: { const: "http" }, method: { const: "GET" }, queryParams: { type: "object", properties: Object.fromEntries(Object.keys(QP).map((k) => [k, { type: "string", description: QP[k] }])) } }, required: ["type", "method"] } }, required: ["input"] },
@@ -83,7 +83,28 @@ async function getPublicFeed() {
   return r.json();
 }
 // Free routes always get a redacted feed (defensive even though the static feed is already redacted).
-async function getFeed() { return redactFeed(await getPublicFeed()); }
+async function getFeed() { return withPaidEvidence(redactFeed(await getPublicFeed())); }
+// Free per-item coverage hint (Codex, issue #1: state coverage/freshness BEFORE purchase): which paid trust fields exist
+// for this bounty right now, when they were checked, and a one-bounty paid URL. Field NAMES only, never values.
+// Items that are new/changed since the trust snapshot get available=[] and no buy URL (paying would add nothing).
+const BASE_URL = "https://agent-bounty-feed.dailydollar.workers.dev";
+const fullIndex = new WeakMap();
+function paidEvidence(pubItem, full = EMBEDDED_FULL) {
+  if (!full || !pubItem || !pubItem.id) return { available: [], note: "no trust evidence for this item in the current snapshot" };
+  let idx = fullIndex.get(full);
+  if (!idx) { idx = new Map((full.items || []).map(i => [i.id, i])); fullIndex.set(full, idx); }
+  const f = idx.get(pubItem.id);
+  if (!f) return { available: [], note: "new since the trust snapshot; evidence not gathered yet (do not pay for it yet)" };
+  const d = diverged(pubItem, f);
+  if (d.length) return { available: [], note: "changed since the trust snapshot (" + d.join(",") + "); evidence withheld until re-checked (do not pay for it yet)" };
+  const has = (v) => v != null && !(typeof v === "object" && !Array.isArray(v) && !Object.keys(v).length) && !(Array.isArray(v) && !v.length);
+  const available = TRUST_FIELDS.filter(k => has(f[k]));
+  if (f.verified && typeof f.verified === "object" && f.verified.how) available.push("verified.how");
+  if (!available.length) return { available: [], note: "no trust evidence exposed by the source for this item" };
+  return { available, trust_checked_at: trustCheckedAt(f, full), price_usdc: "0.01", network: "base", url: BASE_URL + "/v1/bounties?id=" + encodeURIComponent(pubItem.id),
+    when_to_buy: "Only if it changes your claim/skip decision for THIS bounty (e.g. poster payout history, how many others are already working it). Evidence, not a payment guarantee." };
+}
+const withPaidEvidence = (feed, full = EMBEDDED_FULL) => ({ ...feed, items: (feed.items || []).map(i => ({ ...i, paid_evidence: paidEvidence(i, full) })) });
 // Paid route: the bundled full feed when it is at least as new as the public one; otherwise the public items
 // enriched with the trust layer from the bundled copy (by id), labelled "lagging".
 // Lagging honesty: an item whose discovery facts (reward, currency, status, deadline, url) diverged from the older
@@ -97,7 +118,7 @@ const trustCheckedAt = (f, full) => (f && f.verified && typeof f.verified === "o
 function enrich(pub, full) {
   const byId = new Map((full.items || []).map(i => [i.id, i]));
   const items = (pub.items || []).map(i => {
-    const f = byId.get(i.id); const o = { ...i }; delete o.trust_layer;
+    const f = byId.get(i.id); const o = { ...i }; delete o.trust_layer; delete o.paid_evidence;
     if (!f) return { ...o, trust_layer: "paid", trust_layer_missing: true, trust_missing_reason: "new since trust snapshot" };
     const d = diverged(i, f);
     if (d.length) return { ...o, trust_layer: "paid", trust_layer_missing: true, trust_missing_reason: "changed since trust snapshot: " + d.join(",") };
@@ -171,7 +192,7 @@ function earnNow(feed, now = Date.now()) {
     .sort((a, b) => earnUsd(b) - earnUsd(a))
     .slice(0, 15)
     .map(i => ({ id: i.id, title: i.title, est_usd: earnUsd(i), source: i.source, url: i.url, requires: i.requires || [], slots_left: i.slots_left ?? null, deadline: i.deadline ?? null,
-      verified_at: (i.verified && i.verified.checked_at) || i.fetched_at || null, one_liner: oneLiner(i) }));
+      verified_at: (i.verified && i.verified.checked_at) || i.fetched_at || null, one_liner: oneLiner(i), ...(i.paid_evidence ? { paid_evidence: i.paid_evidence } : {}) }));
   const gen = Date.parse(feed.generated_at || "");
   return { name: "Agent Bounty Feed — earn now", generated_at: feed.generated_at, feed_age_minutes: Number.isNaN(gen) ? null : Math.round((now - gen) / 60000), mcp: MCP_URL, feed: UPSTREAM,
     submit_a_bounty: SUBMIT_URL, paid_trust_layer: PAID_ONLY_NOTE,
@@ -218,7 +239,8 @@ const cmpCursor = (a, b) => (fsMs(a) - fsMs(b)) || (String(a.id) < String(b.id) 
 // Validate query params up front so bad requests get a free 400 instead of a charge.
 function parseQuery(q) {
   const errs = [];
-  const out = { source: null, min_usd: 0, network: null, exclude: new Set(), since: null, since_iso: null, after_id: null, sort: null, limit: 500, text: null };
+  const out = { ids: null, source: null, min_usd: 0, network: null, exclude: new Set(), since: null, since_iso: null, after_id: null, sort: null, limit: 500, text: null };
+  if (q.get("id")) { out.ids = new Set(q.get("id").split(",").map(s => s.trim()).filter(Boolean)); if (out.ids.size > 50) errs.push("id accepts at most 50 comma-separated ids"); }
   if (q.get("source")) out.source = new Set(q.get("source").split(",").map(s => s.trim()).filter(Boolean));
   if (q.get("min_usd")) { out.min_usd = Number(q.get("min_usd")); if (!Number.isFinite(out.min_usd)) errs.push("min_usd must be a number"); }
   if (q.get("network")) out.network = q.get("network");
@@ -234,6 +256,7 @@ function parseQuery(q) {
 
 function applyFilter(feed, o) {
   let items = feed.items || [];
+  if (o.ids) items = items.filter(i => o.ids.has(i.id));
   if (o.source) items = items.filter(i => o.source.has(i.source));
   if (o.min_usd > 0) items = items.filter(i => { const u = knownUsd(i); return u !== null && u >= o.min_usd; });
   if (o.network) items = items.filter(i => (i.network || "").toLowerCase().startsWith(o.network.toLowerCase()));
@@ -361,4 +384,4 @@ async function handleBounties(request, url, env, deps = { facilitator, getPaidFe
 }
 
 // Pure helpers for tests (not routes).
-export const _test = { knownUsd, earnUsd, parseQuery, applyFilter, earnNow, filter, redactItem, redactFeed, getPaidFeed, TRUST_FIELDS, enrich, diverged, trustGuard, handleBounties };
+export const _test = { paidEvidence, withPaidEvidence, knownUsd, earnUsd, parseQuery, applyFilter, earnNow, filter, redactItem, redactFeed, getPaidFeed, TRUST_FIELDS, enrich, diverged, trustGuard, handleBounties };

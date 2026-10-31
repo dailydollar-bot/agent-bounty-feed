@@ -36,7 +36,7 @@ const slim = (i) => ({ id: i.id, source: i.source, kind: i.kind, title: i.title,
   ...(i.reward_basis ? { reward_basis: i.reward_basis, pool_amount: i.pool_amount, per_worker_usd: i.per_worker_usd } : {}),
   deadline: i.deadline, url: i.url, requires: i.requires, slots_left: i.slots_left, first_seen: i.first_seen, eligibility: i.eligibility,
   verified: i.verified ? { checked_at: i.verified.checked_at ?? null, ...(i.verified.degraded ? { degraded: true } : {}) } : null,
-  ...(i.stale ? { stale: true } : {}), trust_layer: "paid" });
+  ...(i.stale ? { stale: true } : {}), trust_layer: "paid", ...(i.paid_evidence ? { paid_evidence: i.paid_evidence } : {}) });
 
 function toQuery(args) {
   const p = new URLSearchParams();
