@@ -290,12 +290,14 @@ ok("earn-now output carries no trust layer and links the submit form", () => {
       ok(`page guard ${hdr} ${qs}: all-missing page -> 503, /verify only, no receipt`, () => {
         assert.equal(b.r.status, 503); assert.deepEqual(b.calls, ["/verify"]); assert.match(b.body.error, /not charged/);
         assert.equal(b.r.headers.get("X-PAYMENT-RESPONSE"), null); assert.equal(b.r.headers.get("PAYMENT-RESPONSE"), null);
+        assert.equal(b.r._stage, "pay_blocked_unpaid");
       });
     }
     const mixed = await run("", hdr);
     ok(`page guard ${hdr}: mixed page still settles`, () => { assert.equal(mixed.r.status, 200); assert.deepEqual(mixed.calls, ["/verify", "/settle"]); });
     const trusted = await run("?source=direct", hdr);
     ok(`page guard ${hdr}: trusted page settles`, () => { assert.equal(trusted.r.status, 200); assert.deepEqual(trusted.calls, ["/verify", "/settle"]); });
+    ok(`stage tags ${hdr}: blocked -> pay_blocked_unpaid, settled -> pay_settle_ok`, () => { assert.equal(trusted.r._stage, "pay_settle_ok"); });
     const empty = await run("?id=nope:0", hdr);
     ok(`page guard ${hdr}: empty page keeps existing policy (settles, 0 items)`, () => { assert.equal(empty.r.status, 200); assert.equal(empty.body.items.length, 0); });
   }

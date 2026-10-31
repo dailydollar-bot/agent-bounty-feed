@@ -202,7 +202,9 @@ function earnNow(feed, now = Date.now()) {
 }
 
 // ---- anonymous hit counters (KV, one write per request, never blocks the response) ----
-const BUCKETS = ["mcp", "earn_now", "v1_bounties_402", "v1_bounties_paid", "health", "agent_card", "other"];
+const BUCKETS = ["mcp", "earn_now", "v1_bounties_402", "v1_bounties_paid", "health", "agent_card", "other",
+  // payment-stage funnel (anonymous, no wallets/payloads/IPs): which stage a signed attempt reached
+  "pay_sig_supplied", "pay_header_invalid", "pay_verify_reject", "pay_blocked_unpaid", "pay_settle_fail", "pay_settle_ok", "pay_bad_request"];
 function bump(env, ctx, bucket) {
   if (!env || !env.HITS || !ctx) return;
   const key = "hits:" + new Date().toISOString().slice(0, 10) + ":" + bucket;
@@ -327,6 +329,7 @@ export default {
     if (p === "/v1/bounties" && request.method !== "OPTIONS") {
       const res = await handleBounties(request, url, env);
       bump(env, ctx, res.status === 200 ? "v1_bounties_paid" : res.status === 402 ? "v1_bounties_402" : "other");
+      if (request.headers.get("X-PAYMENT") || request.headers.get("PAYMENT-SIGNATURE")) { bump(env, ctx, "pay_sig_supplied"); if (res._stage) bump(env, ctx, res._stage); }
       return res;
     }
     return handle(request, url, env);
@@ -362,29 +365,30 @@ async function handle(request, url, env) {
 
 async function handleBounties(request, url, env, deps = { facilitator, getPaidFeed }) {
     const { opts, errs } = parseQuery(url.searchParams);
-    if (errs.length) return json({ error: "bad request (not charged)", details: errs, see: url.origin + "/" }, 400);
+    const tag = (r, st) => { r._stage = st; return r; };
+    if (errs.length) return tag(json({ error: "bad request (not charged)", details: errs, see: url.origin + "/" }, 400), "pay_bad_request");
     const req = requirements(url), req2 = requirementsV2(url);
     const required = (error) => json({ x402Version: 1, error, accepts: [req] }, 402, { "PAYMENT-REQUIRED": b64({ x402Version: 2, error, resource: resourceV2(url), accepts: [req2], extensions: { bazaar: BAZAAR } }) });
     const h1 = request.headers.get("X-PAYMENT"), h2 = request.headers.get("PAYMENT-SIGNATURE");
     if (!h1 && !h2) return required("X-PAYMENT header is required");
     const version = h2 ? 2 : 1, preq = version === 2 ? req2 : req;
     let payload;
-    try { payload = b64json(h2 || h1); } catch { return required("invalid payment header"); }
+    try { payload = b64json(h2 || h1); } catch { return tag(required("invalid payment header"), "pay_header_invalid"); }
     const v = await deps.facilitator("/verify", payload, preq, version);
-    if (!v.isValid) return required(v.invalidReason || "payment invalid");
+    if (!v.isValid) return tag(required(v.invalidReason || "payment invalid"), "pay_verify_reject");
     let got;
-    try { got = await deps.getPaidFeed(env); } catch (e) { return json({ error: "feed temporarily unavailable; you were not charged" }, 503); }
+    try { got = await deps.getPaidFeed(env); } catch (e) { return tag(json({ error: "feed temporarily unavailable; you were not charged" }, 503), "pay_blocked_unpaid"); }
     const blocked = trustGuard(got);
-    if (blocked) return json(blocked, 503, { "retry-after": "3600", "cache-control": "no-store" }); // never reaches /settle
+    if (blocked) return tag(json(blocked, 503, { "retry-after": "3600", "cache-control": "no-store" }), "pay_blocked_unpaid"); // never reaches /settle
     const body = filter(got.feed, url.searchParams, opts, got.trust_layer, got.trust_layer_generated_at);
     // Page-level guard (shared#1 / agent-bounty-feed#5): the whole-feed guard above can pass while the
     // filtered/paginated page the buyer actually gets has no trust at all. Never settle for that page.
     if (body.items && body.items.length > 0 && body.items.every(i => i.trust_layer_missing === true))
-      return json({ error: "paid trust layer unavailable for every item on this page; you were not charged (payment verified but not settled)", trust_layer: got.trust_layer, retry_after_seconds: 3600 }, 503, { "retry-after": "3600", "cache-control": "no-store" });
+      return tag(json({ error: "paid trust layer unavailable for every item on this page; you were not charged (payment verified but not settled)", trust_layer: got.trust_layer, retry_after_seconds: 3600 }, 503, { "retry-after": "3600", "cache-control": "no-store" }), "pay_blocked_unpaid");
     const s = await deps.facilitator("/settle", payload, preq, version);
-    if (!s.success) return required(s.errorReason || "settlement failed");
+    if (!s.success) return tag(required(s.errorReason || "settlement failed"), "pay_settle_fail");
     const enc = b64(s);
-    return json(body, 200, { "X-PAYMENT-RESPONSE": enc, "PAYMENT-RESPONSE": enc });
+    return tag(json(body, 200, { "X-PAYMENT-RESPONSE": enc, "PAYMENT-RESPONSE": enc }), "pay_settle_ok");
 }
 
 // Pure helpers for tests (not routes).
