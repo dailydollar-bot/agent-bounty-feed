@@ -272,6 +272,35 @@ ok("earn-now output carries no trust layer and links the submit form", () => {
   });
 }
 
+// ---- Page-level no-charge guard (shared#1 6539669141 / public #5): filtered page with only trust-missing items
+{
+  const OLD = "2026-10-28T00:00:00Z";
+  const items = [ { ...RICH, id: "direct:demo", source: "direct" }, { ...T.redactItem({ ...RICH, id: "new:1", source: "new" }), trust_layer: "paid", trust_layer_missing: true, trust_missing_reason: "new since trust snapshot" } ];
+  const got = { feed: { generated_at: OLD, items }, trust_layer: "lagging", trust_layer_generated_at: OLD };
+  const run = async (qs, hdr) => {
+    const calls = [];
+    const deps = { facilitator: async (path) => { calls.push(path); return path === "/verify" ? { isValid: true } : { success: true, transaction: "0xt" }; }, getPaidFeed: async () => got };
+    const url = new URL("https://x/v1/bounties" + qs);
+    const r = await T.handleBounties(new Request(url, { headers: { [hdr]: btoa(JSON.stringify({ x402Version: hdr === "X-PAYMENT" ? 1 : 2 })) } }), url, null, deps);
+    return { r, calls, body: await r.json() };
+  };
+  for (const hdr of ["X-PAYMENT", "PAYMENT-SIGNATURE"]) {
+    for (const qs of ["?source=new", "?id=new:1"]) {
+      const b = await run(qs, hdr);
+      ok(`page guard ${hdr} ${qs}: all-missing page -> 503, /verify only, no receipt`, () => {
+        assert.equal(b.r.status, 503); assert.deepEqual(b.calls, ["/verify"]); assert.match(b.body.error, /not charged/);
+        assert.equal(b.r.headers.get("X-PAYMENT-RESPONSE"), null); assert.equal(b.r.headers.get("PAYMENT-RESPONSE"), null);
+      });
+    }
+    const mixed = await run("", hdr);
+    ok(`page guard ${hdr}: mixed page still settles`, () => { assert.equal(mixed.r.status, 200); assert.deepEqual(mixed.calls, ["/verify", "/settle"]); });
+    const trusted = await run("?source=direct", hdr);
+    ok(`page guard ${hdr}: trusted page settles`, () => { assert.equal(trusted.r.status, 200); assert.deepEqual(trusted.calls, ["/verify", "/settle"]); });
+    const empty = await run("?id=nope:0", hdr);
+    ok(`page guard ${hdr}: empty page keeps existing policy (settles, 0 items)`, () => { assert.equal(empty.r.status, 200); assert.equal(empty.body.items.length, 0); });
+  }
+}
+
 // ---- paid_evidence coverage hint + id filter (31 Oct, Codex "state coverage before purchase")
 {
   const FULLX = { generated_at: "2026-10-31T00:00:00Z", items: [

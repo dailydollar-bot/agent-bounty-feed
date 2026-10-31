@@ -377,6 +377,10 @@ async function handleBounties(request, url, env, deps = { facilitator, getPaidFe
     const blocked = trustGuard(got);
     if (blocked) return json(blocked, 503, { "retry-after": "3600", "cache-control": "no-store" }); // never reaches /settle
     const body = filter(got.feed, url.searchParams, opts, got.trust_layer, got.trust_layer_generated_at);
+    // Page-level guard (shared#1 / agent-bounty-feed#5): the whole-feed guard above can pass while the
+    // filtered/paginated page the buyer actually gets has no trust at all. Never settle for that page.
+    if (body.items && body.items.length > 0 && body.items.every(i => i.trust_layer_missing === true))
+      return json({ error: "paid trust layer unavailable for every item on this page; you were not charged (payment verified but not settled)", trust_layer: got.trust_layer, retry_after_seconds: 3600 }, 503, { "retry-after": "3600", "cache-control": "no-store" });
     const s = await deps.facilitator("/settle", payload, preq, version);
     if (!s.success) return required(s.errorReason || "settlement failed");
     const enc = b64(s);
