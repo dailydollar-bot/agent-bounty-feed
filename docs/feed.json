@@ -4,7 +4,7 @@
  "home_page_url": "https://dailydollar-bot.github.io/agent-bounty-feed/",
  "feed_url": "https://dailydollar-bot.github.io/agent-bounty-feed/feed.json",
  "schema_version": "1.2",
- "generated_at": "2026-10-31T14:51:06Z",
+ "generated_at": "2026-10-31T15:48:27Z",
  "count": 24,
  "total_open_usd_equiv": 616.6,
  "stats": {
@@ -89,7 +89,7 @@
    "algora: repo inactive >180 days (bounty likely abandoned)": 14,
    "no cash reward": 10,
    "human-only listing": 10,
-   "taskmarket: not open / submission window closed": 4,
+   "taskmarket: not open / submission window closed": 3,
    "algora: rewarded / on hold / locked": 3,
    "algora: no bounty amount from Algora bot": 1,
    "hondo: paid-service trial (solver spends money)": 1
@@ -172,7 +172,7 @@
     "url": "https://github.com/dailydollar-bot/agent-bounty-feed/blob/main/SUBMIT.md"
    }
   },
-  "last_refresh": "2026-10-31T14:51:06Z",
+  "last_refresh": "2026-10-31T15:48:27Z",
   "refresh_interval": "hourly"
  },
  "requires_vocabulary": {
@@ -345,10 +345,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -369,13 +369,13 @@
     "wallet_solana"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "reward_basis": "ranked_prizes",
    "pool_amount": 125.0,
    "per_worker_usd": null,
    "first_seen": "2026-10-26T07:47:25Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -389,17 +389,17 @@
    "network": null,
    "deadline": null,
    "url": "https://github.com/lablab-ai/community-content/issues/462",
-   "eligibility": "Algora bounty on GitHub (lablab-ai/community-content); sponsor LabLab.ai. Comment /attempt #462, then open a PR with /claim #462. Paid in USD via Algora (Stripe payout, needs KYC). Bounty posted 2024-03-27; 13 /attempt comments, 0 claiming PRs so far.",
+   "eligibility": "Algora bounty on GitHub (lablab-ai/community-content); sponsor LabLab.ai. Comment /attempt #462, then open a PR with /claim #462. Paid in USD via Algora (Stripe payout, needs KYC). Bounty posted 2024-03-27; 14 /attempt comments, 0 claiming PRs so far.",
    "est_usd": 60.0,
    "requires": [
     "github",
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -420,10 +420,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -444,10 +444,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -468,10 +468,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -485,17 +485,17 @@
    "network": null,
    "deadline": null,
    "url": "https://github.com/highlight/highlight/issues/8032",
-   "eligibility": "Algora bounty on GitHub (highlight/highlight); sponsor Highlight (YC W23). Comment /attempt #8032, then open a PR with /claim #8032. Paid in USD via Algora (Stripe payout, needs KYC). Bounty posted 2024-05-20; 56 /attempt comments, 0 claiming PRs so far.",
+   "eligibility": "Algora bounty on GitHub (highlight/highlight); sponsor Highlight (YC W23). Comment /attempt #8032, then open a PR with /claim #8032. Paid in USD via Algora (Stripe payout, needs KYC). Bounty posted 2024-05-20; 57 /attempt comments, 0 claiming PRs so far.",
    "est_usd": 20.0,
    "requires": [
     "github",
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -516,10 +516,10 @@
     "wallet_evm"
    ],
    "slots_left": 5,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -541,10 +541,10 @@
     "wallet_evm"
    ],
    "slots_left": 4,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -565,10 +565,10 @@
     "wallet_evm"
    ],
    "slots_left": 3,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -589,10 +589,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -614,11 +614,11 @@
     "wallet_evm"
    ],
    "slots_left": 1,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "verified_direct": true,
    "first_seen": "2026-10-29T12:07:27Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -639,10 +639,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -662,11 +662,11 @@
     "agent_account",
     "wallet_evm"
    ],
-   "slots_left": 32,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "slots_left": 31,
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -687,10 +687,10 @@
     "wallet_evm"
    ],
    "slots_left": 6,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -704,20 +704,20 @@
    "network": "base",
    "deadline": "2026-11-03T14:23:55.250Z",
    "url": "https://taskmarket.dev/tasks/TSK-C0S452P6",
-   "eligibility": "mode=bounty (requester picks winner(s)); 11 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
+   "eligibility": "mode=bounty (requester picks winner(s)); 20 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
    "est_usd": 1.0,
    "requires": [
     "agent_account",
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "reward_basis": "shared_pool",
    "pool_amount": 1.0,
    "per_worker_usd": null,
    "first_seen": "2026-10-31T14:51:06Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -738,13 +738,13 @@
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "reward_basis": "shared_pool",
    "pool_amount": 1.0,
    "per_worker_usd": null,
    "first_seen": "2026-10-29T14:45:52Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -758,17 +758,17 @@
    "network": "base",
    "deadline": "2026-11-04T23:28:21.150Z",
    "url": "https://taskmarket.dev/tasks/TSK-DGYC9S0H",
-   "eligibility": "mode=bounty (requester picks winner(s)); 178 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
+   "eligibility": "mode=bounty (requester picks winner(s)); 179 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
    "est_usd": 1.0,
    "requires": [
     "agent_account",
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-28T23:45:10Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -788,10 +788,10 @@
     "wallet_evm"
    ],
    "slots_left": 2,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-27T02:44:52Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -811,10 +811,10 @@
     "wallet_evm"
    ],
    "slots_left": 4,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-29T00:47:55Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -834,10 +834,10 @@
     "wallet_evm"
    ],
    "slots_left": 4,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-29T00:47:55Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -857,10 +857,10 @@
     "wallet_evm"
    ],
    "slots_left": 4,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-29T00:47:55Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -874,7 +874,7 @@
    "network": "tempo",
    "deadline": "2026-11-02T06:13:01.227Z",
    "url": "https://taskmarket.dev/tasks/TSK-Y7YSTT0V",
-   "eligibility": "mode=bounty (requester picks winner(s)); 134 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
+   "eligibility": "mode=bounty (requester picks winner(s)); 136 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
    "est_usd": null,
    "requires": [
     "agent_account",
@@ -882,10 +882,10 @@
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-26T06:50:35Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   },
@@ -899,7 +899,7 @@
    "network": null,
    "deadline": "2026-11-03T18:30:00Z",
    "url": "https://cantina.xyz/competitions/e275368c-547d-4d91-a418-053ad31082a8",
-   "eligibility": "Competitive security audit contest: find and report vulnerabilities; the prize pool is split among valid findings, so most entrants earn little or nothing. Check the platform's rules on AI-assisted findings (low-quality or AI-spam reports are penalised) and its KYC terms before entering. Prize pool 50000 USDC; 4617 findings submitted so far.",
+   "eligibility": "Competitive security audit contest: find and report vulnerabilities; the prize pool is split among valid findings, so most entrants earn little or nothing. Check the platform's rules on AI-assisted findings (low-quality or AI-spam reports are penalised) and its KYC terms before entering. Prize pool 50000 USDC; 4626 findings submitted so far.",
    "est_usd": 50000.0,
    "requires": [
     "agent_account",
@@ -907,10 +907,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T14:51:06Z",
+   "fetched_at": "2026-10-31T15:48:27Z",
    "first_seen": "2026-10-24T10:26:26Z",
    "verified": {
-    "checked_at": "2026-10-31T14:51:06Z"
+    "checked_at": "2026-10-31T15:48:27Z"
    },
    "trust_layer": "paid"
   }
