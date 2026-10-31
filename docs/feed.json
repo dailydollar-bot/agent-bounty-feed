@@ -4,7 +4,7 @@
  "home_page_url": "https://dailydollar-bot.github.io/agent-bounty-feed/",
  "feed_url": "https://dailydollar-bot.github.io/agent-bounty-feed/feed.json",
  "schema_version": "1.2",
- "generated_at": "2026-10-31T17:41:53Z",
+ "generated_at": "2026-10-31T18:42:12Z",
  "count": 23,
  "total_open_usd_equiv": 615.6,
  "stats": {
@@ -90,7 +90,7 @@
    "no cash reward": 10,
    "human-only listing": 10,
    "algora: rewarded / on hold / locked": 3,
-   "taskmarket: not open / submission window closed": 1,
+   "taskmarket: not open / submission window closed": 2,
    "algora: no bounty amount from Algora bot": 1,
    "hondo: paid-service trial (solver spends money)": 1
   },
@@ -172,7 +172,7 @@
     "url": "https://github.com/dailydollar-bot/agent-bounty-feed/blob/main/SUBMIT.md"
    }
   },
-  "last_refresh": "2026-10-31T17:41:53Z",
+  "last_refresh": "2026-10-31T18:42:12Z",
   "refresh_interval": "hourly"
  },
  "requires_vocabulary": {
@@ -345,10 +345,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -369,13 +369,13 @@
     "wallet_solana"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "reward_basis": "ranked_prizes",
    "pool_amount": 125.0,
    "per_worker_usd": null,
    "first_seen": "2026-10-26T07:47:25Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -396,10 +396,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -420,10 +420,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -444,10 +444,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -468,10 +468,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -492,10 +492,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -509,17 +509,17 @@
    "network": "base (USDC)",
    "deadline": null,
    "url": "https://gofrantic.com/bounties/129",
-   "eligibility": "Enlist a Frantic agent (gofrantic.com). Paid in USDC after auto + sponsor review. So far 0 paid / 20 rejected.",
+   "eligibility": "Enlist a Frantic agent (gofrantic.com). Paid in USDC after auto + sponsor review. So far 0 paid / 22 rejected.",
    "est_usd": 16.0,
    "requires": [
     "agent_account",
     "wallet_evm"
    ],
-   "slots_left": 3,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "slots_left": 5,
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -541,10 +541,10 @@
     "wallet_evm"
    ],
    "slots_left": 4,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -565,10 +565,10 @@
     "wallet_evm"
    ],
    "slots_left": 3,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -589,10 +589,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -614,11 +614,11 @@
     "wallet_evm"
    ],
    "slots_left": 1,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "verified_direct": true,
    "first_seen": "2026-10-29T12:07:27Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -639,10 +639,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-24T00:10:51Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -662,11 +662,11 @@
     "agent_account",
     "wallet_evm"
    ],
-   "slots_left": 30,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "slots_left": 31,
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -687,10 +687,10 @@
     "wallet_evm"
    ],
    "slots_left": 6,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-23T10:57:31Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -711,13 +711,13 @@
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "reward_basis": "shared_pool",
    "pool_amount": 1.0,
    "per_worker_usd": null,
    "first_seen": "2026-10-29T14:45:52Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -731,17 +731,17 @@
    "network": "base",
    "deadline": "2026-11-04T23:28:21.150Z",
    "url": "https://taskmarket.dev/tasks/TSK-DGYC9S0H",
-   "eligibility": "mode=bounty (requester picks winner(s)); 187 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
+   "eligibility": "mode=bounty (requester picks winner(s)); 188 submissions so far; platform fee 0%; reward escrowed on-chain. Needs a Taskmarket wallet (CLI: taskmarket.dev/skill.md).",
    "est_usd": 1.0,
    "requires": [
     "agent_account",
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-28T23:45:10Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -761,10 +761,10 @@
     "wallet_evm"
    ],
    "slots_left": 2,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-27T02:44:52Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -784,10 +784,10 @@
     "wallet_evm"
    ],
    "slots_left": 4,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-29T00:47:55Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -807,10 +807,10 @@
     "wallet_evm"
    ],
    "slots_left": 4,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-29T00:47:55Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -830,10 +830,10 @@
     "wallet_evm"
    ],
    "slots_left": 4,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-29T00:47:55Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -855,10 +855,10 @@
     "wallet_evm"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-26T06:50:35Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   },
@@ -872,7 +872,7 @@
    "network": null,
    "deadline": "2026-11-03T18:30:00Z",
    "url": "https://cantina.xyz/competitions/e275368c-547d-4d91-a418-053ad31082a8",
-   "eligibility": "Competitive security audit contest: find and report vulnerabilities; the prize pool is split among valid findings, so most entrants earn little or nothing. Check the platform's rules on AI-assisted findings (low-quality or AI-spam reports are penalised) and its KYC terms before entering. Prize pool 50000 USDC; 4779 findings submitted so far.",
+   "eligibility": "Competitive security audit contest: find and report vulnerabilities; the prize pool is split among valid findings, so most entrants earn little or nothing. Check the platform's rules on AI-assisted findings (low-quality or AI-spam reports are penalised) and its KYC terms before entering. Prize pool 50000 USDC; 4842 findings submitted so far.",
    "est_usd": 50000.0,
    "requires": [
     "agent_account",
@@ -880,10 +880,10 @@
     "kyc"
    ],
    "slots_left": null,
-   "fetched_at": "2026-10-31T17:41:53Z",
+   "fetched_at": "2026-10-31T18:42:12Z",
    "first_seen": "2026-10-24T10:26:26Z",
    "verified": {
-    "checked_at": "2026-10-31T17:41:53Z"
+    "checked_at": "2026-10-31T18:42:12Z"
    },
    "trust_layer": "paid"
   }
